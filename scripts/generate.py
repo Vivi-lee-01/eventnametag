@@ -957,6 +957,14 @@ _ALLOWED_TEMPLATE_TOKENS = {
 # <svg>…</svg> 블록 (sanitize_svg 적용 단위).
 _SVG_BLOCK_RE = re.compile(r"<svg\b.*?</svg\s*>", re.IGNORECASE | re.DOTALL)
 _STYLE_BLOCK_RE = re.compile(r"<style\b[^>]*>(.*?)</style\s*>", re.IGNORECASE | re.DOTALL)
+# 현장 수기용 공백은 진짜 공백이어야 한다. 밑줄/점선/가이드라인은 밤티처럼 보이고,
+# 실제 네임펜 필기 방향·크기 선택도 방해하므로 AI 템플릿 단계에서 막는다.
+_WRITING_GUIDE_RE = re.compile(
+    r"border-(?:bottom|top)\s*:|text-decoration\s*:\s*underline|\b(?:dashed|dotted)\b|점선|밑줄",
+    re.IGNORECASE,
+)
+# 네임택은 포스터/초대장이 아니다. 장소·주소·층수는 칸을 잡아먹으므로 기본 금지.
+_VENUE_COPY_RE = re.compile(r"\b(?:venue|location|place|address)\b|장소|주소|오피스|office|층\b|\d+F\b|\d+층", re.IGNORECASE)
 # SVG 제거 후 잔여 텍스트에서 거부할 위험 패턴 (외부 리소스/스크립트/핸들러).
 # 내부 SVG 조각 참조 url(#id)는 svg 블록 안이라 이미 제거됨 → 잔여 url(은 외부만 의심.
 _OUTER_DANGER_RE = re.compile(
@@ -1023,6 +1031,13 @@ def validate_cell_template(template: str, brand: dict | None = None) -> tuple[bo
     tz = _parse_textzone(template)
     if tz is None:
         return (False, None, "textzone 메타 없음/무효")
+    x0, y0, x1, y1 = tz
+    if (x1 - x0) * (y1 - y0) < 0.60 or (y1 - y0) < 0.58:
+        return (False, None, "이름/소속 작성 공백이 전체 셀의 2/3 기준에 못 미침")
+    if _WRITING_GUIDE_RE.search(template):
+        return (False, None, "작성 공백에 밑줄/점선/가이드라인 사용 금지")
+    if _VENUE_COPY_RE.search(template):
+        return (False, None, "네임택에는 장소명/주소/층수 문구를 넣지 않음")
     if not _all_template_svgs_clean(template):
         return (False, None, "위험한 SVG (sanitize 거부)")
     # SVG 블록을 제거한 잔여에서 외부 위험 + 예약 셀렉터를 검사한다. svg 내부의 <style>·url은
@@ -1348,20 +1363,17 @@ def build_cell(att: dict | None, brand: dict, event: str, layout_variant: str = 
 
 
 def build_blank_cell(brand: dict, event: str) -> str:
-    """현장 수기용 빈 네임택 — 워드마크만 + 백지 본문."""
+    """현장 수기용 빈 네임택 — 워드마크만 + 2/3 이상 백지 본문. 장소/행사 세부문구 금지."""
     wordmark = brand.get("wordmark", {})
     wm_text = html_mod.escape(apply_case(wordmark.get("text", ""), wordmark.get("case", "title")))
     sig_html = build_signature_html(brand)
-    event_upper = html_mod.escape(event).upper()
 
     parts = [
-        '<div class="cell">',
-        '  <div class="tag">',
-        '    <div class="topbar">',
+        '<div class="cell blank-cell">',
+        '  <div class="tag blank-tag">',
+        '    <div class="topbar blank-topbar">',
         f'      <div class="brand-wrap">{sig_html}<span>{wm_text}</span></div>',
     ]
-    if event_upper:
-        parts.append(f'      <div class="event">{event_upper}</div>')
     parts.append('    </div>')
     parts.append('    <div class="body blank-body"></div>')
     parts.append('  </div>')

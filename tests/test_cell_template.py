@@ -13,7 +13,7 @@ import generate  # noqa: E402
 
 # 검증 통과하는 표준 AI 템플릿 (텍스트존 + {{name}} + 저잉크 SVG 배경).
 GOOD_TEMPLATE = (
-    "<!-- textzone: 0.1,0.45,0.9,0.7 -->\n"
+    "<!-- textzone: 0.04,0.32,0.96,0.98 -->\n"
     '<div class="ai-root">\n'
     '  <svg viewBox="0 0 100 68"><rect x="0" y="0" width="100" height="20" '
     'fill="currentColor" opacity="0.1"/></svg>\n'
@@ -27,7 +27,7 @@ class ValidateCellTemplateTests(unittest.TestCase):
     def test_good_template_passes_and_returns_textzone(self):
         ok, tz, reason = generate.validate_cell_template(GOOD_TEMPLATE)
         self.assertTrue(ok, reason)
-        self.assertEqual(tz, (0.1, 0.45, 0.9, 0.7))
+        self.assertEqual(tz, (0.04, 0.32, 0.96, 0.98))
 
     def test_missing_name_slot_rejected(self):
         tpl = "<!-- textzone: 0.1,0.4,0.9,0.6 --><div>{{company}}</div>"
@@ -86,7 +86,7 @@ class ValidateCellTemplateTests(unittest.TestCase):
     def test_svg_with_standard_xmlns_accepted(self):
         # 표준 xmlns(http://www.w3.org/2000/svg)는 무해 — sanitize가 스트립하지만 validate는
         # 거부하지 않는다(AI가 SVG에 습관적으로 추가). 거부하면 정상 디자인이 floor로 떨어진다.
-        tpl = ('<!-- textzone: 0.1,0.4,0.9,0.6 -->'
+        tpl = ('<!-- textzone: 0.04,0.32,0.96,0.98 -->'
                '<div><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10">'
                '<rect width="10" height="10" fill="currentColor"/></svg>{{name}}</div>')
         ok, tz, reason = generate.validate_cell_template(tpl)
@@ -100,7 +100,7 @@ class ValidateCellTemplateTests(unittest.TestCase):
 
     def test_cell_hyphen_class_accepted(self):
         # .cell-name 등 하이픈 BEM 클래스는 예약 셀렉터(.cell)가 아니므로 통과해야 한다.
-        tpl = ("<!-- textzone: 0.1,0.4,0.9,0.6 -->"
+        tpl = ("<!-- textzone: 0.04,0.32,0.96,0.98 -->"
                "<style>.cell-name{font-size:14px}</style><div class=\"cell-name\">{{name}}</div>")
         ok, _, reason = generate.validate_cell_template(tpl)
         self.assertTrue(ok, reason)
@@ -112,7 +112,7 @@ class ValidateCellTemplateTests(unittest.TestCase):
     def test_svg_internal_style_stripped_from_output(self):
         # svg 내부 <style>은 sanitize가 제거 → 셀 경계 침범 불가(@page/.cell 출력 안 됨).
         # lenient: validate는 통과하되 fill 출력에 위험 style이 남지 않아야 한다.
-        tpl = ("<!-- textzone: 0.1,0.4,0.9,0.6 -->"
+        tpl = ("<!-- textzone: 0.04,0.32,0.96,0.98 -->"
                "<svg><style>@page{margin:9cm}.cell{transform:scale(3)}</style>"
                "<rect width='10' height='10' fill='currentColor'/></svg>{{name}}")
         out = generate.fill_template(tpl, {"name": "김"},
@@ -130,10 +130,34 @@ class ValidateCellTemplateTests(unittest.TestCase):
 
     def test_position_absolute_still_accepted(self):
         # position:absolute(셀 내부 배치)는 정상 — 거부되면 안 된다.
-        tpl = ("<!-- textzone: 0.1,0.4,0.9,0.6 -->"
+        tpl = ("<!-- textzone: 0.04,0.32,0.96,0.98 -->"
                "<div style='position:absolute;top:40%'>{{name}}</div>")
         ok, _, reason = generate.validate_cell_template(tpl)
         self.assertTrue(ok, reason)
+
+    def test_writing_space_must_be_two_thirds_of_cell(self):
+        tpl = "<!-- textzone: 0.1,0.45,0.9,0.7 --><div>{{name}}</div>"
+        ok, _, reason = generate.validate_cell_template(tpl)
+        self.assertFalse(ok)
+        self.assertIn("2/3", reason)
+
+    def test_blank_writing_guides_rejected(self):
+        tpl = (
+            "<!-- textzone: 0.04,0.32,0.96,0.98 -->"
+            "<div style='border-bottom:0.3mm dashed #ccc'>{{name}}</div>"
+        )
+        ok, _, reason = generate.validate_cell_template(tpl)
+        self.assertFalse(ok)
+        self.assertIn("밑줄/점선", reason)
+
+    def test_venue_copy_rejected(self):
+        tpl = (
+            "<!-- textzone: 0.04,0.32,0.96,0.98 -->"
+            "<div>토스 신논현오피스 9F {{name}}</div>"
+        )
+        ok, _, reason = generate.validate_cell_template(tpl)
+        self.assertFalse(ok)
+        self.assertIn("장소명", reason)
 
 
 class FillTemplateTests(unittest.TestCase):
@@ -168,7 +192,7 @@ class FillTemplateTests(unittest.TestCase):
         self.assertIn("A&amp;B", out)
 
     def test_svg_kept_but_sanitized(self):
-        tpl = ("<!-- textzone: 0.1,0.4,0.9,0.6 -->"
+        tpl = ("<!-- textzone: 0.04,0.32,0.96,0.98 -->"
                '<div><svg viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg">'
                '<rect width="10" height="10" fill="currentColor"/></svg>{{name}}</div>')
         out = generate.fill_template(tpl, {"name": "김"}, self._brand(), "")
