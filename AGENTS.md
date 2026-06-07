@@ -144,11 +144,11 @@ design:
 **불변식 🔒** (1) 셀 경계 못 넘음 — `<style>`이 html/body/.cell/.a4-sheet/@page 건드리면 거부. (2) 글자는 코드 주입 — `{{name}}` 등 토큰만, SVG/path로 글자 그리기 금지.
 
 **cell_template 규칙:**
-1. 토큰 — `{{name}}`(필수)·`{{company}}`·`{{role}}`·`{{intro}}`·`{{track}}`·`{{group}}`·`{{event}}`. 사이즈: `{{name_size}}`·`{{company_size}}`(긴 이름 축소 램프). 허용 외 토큰 거부.
+1. 토큰 — `{{name}}`(필수)·`{{organizer}}`/`{{host}}`(둘 중 하나 필수, 주최사/호스트명)·`{{company}}`·`{{role}}`·`{{intro}}`·`{{track}}`·`{{group}}`·`{{event}}`. 사이즈: `{{name_size}}`·`{{company_size}}`(긴 이름 축소 램프). 허용 외 토큰 거부.
 2. 텍스트존 — `<!-- textzone: x0,y0,x1,y1 -->`(분수, x0<x1·y0<y1) 필수. 현장 수기/공백형 기준으로 전체 셀의 최소 2/3에 가까운 넓은 이름·소속 작성 공간이어야 한다. 없거나 작으면 floor.
 3. 색/폰트 — `var(--brand-*)`만. SVG는 `fill="currentColor"`. 외부 URL·http(s)·`<script>`·핸들러·`@import`·`data:image/`는 거부(sanitize_svg + 잔여 스캔).
 4. 셀 충전 컨테이너 + `overflow:hidden`(`.cell.variant-ai`).
-5. 공백 작성란에는 점선/밑줄/칸 구분선/NAME 가이드 문구를 넣지 않는다. 장소명·주소·층수 등 포스터성 정보도 네임택 기본값에서 제외한다.
+5. 공백 작성란에는 점선/밑줄/칸 구분선/NAME 가이드 문구를 넣지 않는다. 장소명·주소·층수 등 포스터성 정보도 네임택 기본값에서 제외한다. 단, 주최사/호스트 이름은 반드시 남긴다.
 6. 크리에이티브는 허용하되 인쇄 안전 안에서 한다. 매번 같은 상단 포스터+하단 박스 패턴으로 도망가지 말고, 저잉크 벡터 조형·여백 형태·코너/프레임 구성을 행사마다 다르게 설계한다.
 
 **게이트:** 렌더→잉크·G9·sanitize fail → 강도하향(cell_template 포함 제거) 재시도 → preset(name_hero) fallback. `--layout-variant <floor>`는 AI 건너뛰고 스켈레톤 강제. 검증: `python3 scripts/generate.py --validate <yaml>`.

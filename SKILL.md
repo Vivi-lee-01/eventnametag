@@ -64,6 +64,7 @@ description: 행사 전날, 명단만 넣으면 탐사 A4 8칸 라벨지(99×67.
 - 칸을 “소속/이름”으로 억지 분리하지 않는다. 참가자가 자유롭게 크게 쓸 수 있는 빈 박스로 둔다.
 - 작성 영역은 행사 정보보다 우선순위가 높다. 디자인이 밀리면 장식·파트너 정보·부제부터 줄이고, 작성 영역을 먼저 지킨다.
 - 이벤트 장소명, 주소, 층수, 상세 일시 같은 포스터성 정보는 기본 네임택에 넣지 않는다. 행사명/무드/브랜드 상징만 최소로 남긴다.
+- 주최사/호스트 이름은 반드시 들어간다. 장소·일시보다 우선이며, 작은 워드마크/텍스트라도 각 네임택에 남긴다.
 
 ### 프린터별 실측 보정
 
@@ -307,7 +308,7 @@ v0.5는 "사람이 만든 스켈레톤 중 AI가 고르고 구석에 SVG만" 넣
 2. **글자 내용은 코드가 박는다** — AI는 이름/회사/직무가 *어디에·무슨 색·크기로* 놓일지만 디자인. 글자 자체는 `{{name}}` 등 토큰으로 두고 generate.py가 실제 폰트로 치환. AI가 텍스트를 SVG path/픽셀로 그리면 안 됨(오타·흐림 = 인쇄 사고).
 
 ### `design.cell_template` 작성 규칙
-- **텍스트 슬롯(토큰)**: `{{name}}`(필수)·`{{company}}`·`{{role}}`·`{{intro}}`·`{{track}}`·`{{group}}`·`{{event}}`. 글자를 직접 쓰거나 SVG로 그리지 않는다. 허용 외 토큰(`{{BRAND_*}}` 등)은 검증 거부.
+- **텍스트 슬롯(토큰)**: `{{name}}`(필수)·`{{organizer}}`/`{{host}}`(둘 중 하나 필수, 주최사/호스트명)·`{{company}}`·`{{role}}`·`{{intro}}`·`{{track}}`·`{{group}}`·`{{event}}`. 글자를 직접 쓰거나 SVG로 그리지 않는다. 허용 외 토큰(`{{BRAND_*}}` 등)은 검증 거부.
 - **사이즈 토큰(권장)**: `{{name_size}}`·`{{company_size}}` — 코드가 긴 이름 축소 램프 값(예: `14mm`/`7mm`)으로 치환. 이름 요소에 `style="font-size: {{name_size}}"`로 바인딩하면 긴 이름 셀 침범을 막는다.
 - **텍스트존 메타(필수)**: 템플릿 어딘가에 `<!-- textzone: x0,y0,x1,y1 -->`(셀 기준 분수, `x0<x1`·`y0<y1`, 0~1). 이름이 놓이는 영역 — G9 대비 게이트가 이 영역 배경을 검사한다. 없거나 무효면 floor로 fallback.
 - **색/폰트**: 브랜드 토큰만 — `var(--brand-dark)`·`var(--brand-light)`·`var(--brand-accent-1)`·`var(--brand-font-body/mono)`. SVG는 `fill="currentColor"`. hex 하드코딩·외부 URL·`http(s)://`·`<script>`·이벤트 핸들러·`@import`·`data:image/`·외부 `url(...)`는 검증 거부.
@@ -317,7 +318,7 @@ v0.5는 "사람이 만든 스켈레톤 중 AI가 고르고 구석에 SVG만" 넣
 ```yaml
 design:
   cell_template: |
-    <!-- textzone: 0.08,0.42,0.92,0.66 -->
+    <!-- textzone: 0.04,0.32,0.96,0.98 -->
     <div class="ai-root">
       <svg viewBox="0 0 100 68" style="position:absolute;inset:0">
         <polygon points="0,0 100,0 100,26 0,40" fill="var(--brand-dark)"/>
@@ -329,6 +330,8 @@ design:
         font-size:{{name_size}};color:var(--brand-dark)">{{name}}</div>
       <div class="ai-co" style="position:absolute;top:62%;left:6mm;font-size:{{company_size}};
         color:var(--brand-dark)">{{company}}</div>
+      <div class="ai-org" style="position:absolute;right:5mm;bottom:4mm;font:600 2.6mm var(--brand-font-mono);
+        color:var(--brand-dark);letter-spacing:.08em">{{organizer}}</div>
     </div>
 ```
 

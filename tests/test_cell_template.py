@@ -19,6 +19,7 @@ GOOD_TEMPLATE = (
     'fill="currentColor" opacity="0.1"/></svg>\n'
     '  <div class="ai-name" style="font-size: {{name_size}}; color: var(--brand-dark)">{{name}}</div>\n'
     '  <div class="ai-co" style="color: var(--brand-accent-1)">{{company}}</div>\n'
+    '  <div class="ai-org" style="position:absolute;right:4mm;bottom:3mm;font-size:2.5mm;color:var(--brand-dark)">{{organizer}}</div>\n'
     "</div>"
 )
 
@@ -56,6 +57,17 @@ class ValidateCellTemplateTests(unittest.TestCase):
         ok, _, _ = generate.validate_cell_template(tpl)
         self.assertFalse(ok)
 
+    def test_missing_organizer_slot_rejected(self):
+        tpl = "<!-- textzone: 0.04,0.32,0.96,0.98 --><div>{{name}}</div>"
+        ok, _, reason = generate.validate_cell_template(tpl)
+        self.assertFalse(ok)
+        self.assertIn("주최사", reason)
+
+    def test_host_alias_accepted(self):
+        tpl = "<!-- textzone: 0.04,0.32,0.96,0.98 --><div>{{name}}{{host}}</div>"
+        ok, _, reason = generate.validate_cell_template(tpl)
+        self.assertTrue(ok, reason)
+
     def test_script_rejected(self):
         tpl = ("<!-- textzone: 0.1,0.4,0.9,0.6 -->"
                "<div>{{name}}<script>x()</script></div>")
@@ -88,20 +100,20 @@ class ValidateCellTemplateTests(unittest.TestCase):
         # 거부하지 않는다(AI가 SVG에 습관적으로 추가). 거부하면 정상 디자인이 floor로 떨어진다.
         tpl = ('<!-- textzone: 0.04,0.32,0.96,0.98 -->'
                '<div><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10">'
-               '<rect width="10" height="10" fill="currentColor"/></svg>{{name}}</div>')
+               '<rect width="10" height="10" fill="currentColor"/></svg>{{name}}{{organizer}}</div>')
         ok, tz, reason = generate.validate_cell_template(tpl)
         self.assertTrue(ok, reason)
 
     def test_reserved_selector_in_style_rejected(self):
         tpl = ("<!-- textzone: 0.1,0.4,0.9,0.6 -->"
-               "<style>.cell{width:50mm}</style><div>{{name}}</div>")
+               "<style>.cell{width:50mm}</style><div>{{name}}{{organizer}}</div>")
         ok, _, _ = generate.validate_cell_template(tpl)
         self.assertFalse(ok)
 
     def test_cell_hyphen_class_accepted(self):
         # .cell-name 등 하이픈 BEM 클래스는 예약 셀렉터(.cell)가 아니므로 통과해야 한다.
         tpl = ("<!-- textzone: 0.04,0.32,0.96,0.98 -->"
-               "<style>.cell-name{font-size:14px}</style><div class=\"cell-name\">{{name}}</div>")
+               "<style>.cell-name{font-size:14px}</style><div class=\"cell-name\">{{name}}{{organizer}}</div>")
         ok, _, reason = generate.validate_cell_template(tpl)
         self.assertTrue(ok, reason)
 
@@ -124,19 +136,19 @@ class ValidateCellTemplateTests(unittest.TestCase):
 
     def test_position_fixed_rejected(self):
         tpl = ("<!-- textzone: 0.1,0.4,0.9,0.6 -->"
-               "<div style='position:fixed;top:-50mm'>{{name}}</div>")
+               "<div style='position:fixed;top:-50mm'>{{name}}{{organizer}}</div>")
         ok, _, _ = generate.validate_cell_template(tpl)
         self.assertFalse(ok)
 
     def test_position_absolute_still_accepted(self):
         # position:absolute(셀 내부 배치)는 정상 — 거부되면 안 된다.
         tpl = ("<!-- textzone: 0.04,0.32,0.96,0.98 -->"
-               "<div style='position:absolute;top:40%'>{{name}}</div>")
+               "<div style='position:absolute;top:40%'>{{name}}{{organizer}}</div>")
         ok, _, reason = generate.validate_cell_template(tpl)
         self.assertTrue(ok, reason)
 
     def test_writing_space_must_be_two_thirds_of_cell(self):
-        tpl = "<!-- textzone: 0.1,0.45,0.9,0.7 --><div>{{name}}</div>"
+        tpl = "<!-- textzone: 0.1,0.45,0.9,0.7 --><div>{{name}}{{organizer}}</div>"
         ok, _, reason = generate.validate_cell_template(tpl)
         self.assertFalse(ok)
         self.assertIn("2/3", reason)
@@ -144,7 +156,7 @@ class ValidateCellTemplateTests(unittest.TestCase):
     def test_blank_writing_guides_rejected(self):
         tpl = (
             "<!-- textzone: 0.04,0.32,0.96,0.98 -->"
-            "<div style='border-bottom:0.3mm dashed #ccc'>{{name}}</div>"
+            "<div style='border-bottom:0.3mm dashed #ccc'>{{name}}{{organizer}}</div>"
         )
         ok, _, reason = generate.validate_cell_template(tpl)
         self.assertFalse(ok)
@@ -153,7 +165,7 @@ class ValidateCellTemplateTests(unittest.TestCase):
     def test_venue_copy_rejected(self):
         tpl = (
             "<!-- textzone: 0.04,0.32,0.96,0.98 -->"
-            "<div>토스 신논현오피스 9F {{name}}</div>"
+            "<div>토스 신논현오피스 9F {{name}}{{organizer}}</div>"
         )
         ok, _, reason = generate.validate_cell_template(tpl)
         self.assertFalse(ok)
@@ -170,8 +182,10 @@ class FillTemplateTests(unittest.TestCase):
                                      self._brand(), "AI Meetup")
         self.assertIn("김지원", out)
         self.assertIn("라이브클래스", out)
+        self.assertIn("TESTBRAND", out)
         self.assertNotIn("{{name}}", out)
         self.assertNotIn("{{company}}", out)
+        self.assertNotIn("{{organizer}}", out)
 
     def test_name_size_token_uses_font_ramp(self):
         # 짧은 이름 → 14mm 램프, 긴 이름 → 더 작은 크기 (셀 침범 방지)
@@ -226,7 +240,7 @@ class BuildCellAiBranchTests(unittest.TestCase):
     def test_invalid_template_falls_back_to_skeleton(self):
         # textzone 없는 무효 템플릿 → 기존 diagonal 스켈레톤
         bad = generate.build_cell({"name": "김지원", "company": "A", "track": "AI"},
-                                  self._brand_with_template("<div>{{name}}</div>"),
+                                  self._brand_with_template("<div>{{name}}{{organizer}}</div>"),
                                   "Meetup")
         self.assertNotIn("variant-ai", bad)
         self.assertIn("variant-diagonal", bad)

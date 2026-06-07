@@ -952,7 +952,7 @@ _TEXTZONE_RE = re.compile(
 _TEMPLATE_TOKEN_RE = re.compile(r"\{\{\s*([A-Za-z_]+)\s*\}\}")
 _ALLOWED_TEMPLATE_TOKENS = {
     "name", "company", "role", "intro", "track", "group", "event",
-    "name_size", "company_size",
+    "organizer", "host", "name_size", "company_size",
 }
 # <svg>…</svg> 블록 (sanitize_svg 적용 단위).
 _SVG_BLOCK_RE = re.compile(r"<svg\b.*?</svg\s*>", re.IGNORECASE | re.DOTALL)
@@ -1025,6 +1025,8 @@ def validate_cell_template(template: str, brand: dict | None = None) -> tuple[bo
     tokens = set(_TEMPLATE_TOKEN_RE.findall(template))
     if "name" not in tokens:
         return (False, None, "{{name}} 슬롯 없음")
+    if "organizer" not in tokens and "host" not in tokens:
+        return (False, None, "주최사 이름 슬롯({{organizer}} 또는 {{host}}) 없음")
     unknown = tokens - _ALLOWED_TEMPLATE_TOKENS
     if unknown:
         return (False, None, f"허용되지 않은 토큰: {sorted(unknown)}")
@@ -1068,6 +1070,8 @@ def fill_template(template: str, att: dict, brand: dict, event: str) -> str:
     out = _sanitize_template_svgs(template)
     name = att.get("name", "")
     company = att.get("company", "")
+    wordmark = brand.get("wordmark", {}) or {}
+    organizer = apply_case(wordmark.get("text", ""), wordmark.get("case", "title"))
     values = {
         "name": html_mod.escape(name),
         "company": html_mod.escape(company),
@@ -1076,6 +1080,8 @@ def fill_template(template: str, att: dict, brand: dict, event: str) -> str:
         "track": html_mod.escape(att.get("track", "")),
         "group": html_mod.escape(att.get("group", "")),
         "event": html_mod.escape(event),
+        "organizer": html_mod.escape(organizer),
+        "host": html_mod.escape(organizer),
         "name_size": name_font_size(name),
         "company_size": company_font_size(company),
     }
