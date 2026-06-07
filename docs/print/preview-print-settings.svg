@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+  <title id="title">macOS Preview 인쇄 설정 예시</title>
+  <desc id="desc">탐사 A4 8칸 라벨지 인쇄 시 Preview에서 용지 A4, 크기 조절 100%, 자동 맞춤 해제, 자동 회전 해제를 확인하는 안내 이미지</desc>
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#0f172a" flood-opacity="0.18"/>
+    </filter>
+    <style>
+      .bg { fill: #f6f7fb; }
+      .window { fill: #fff; stroke: #d8dee9; stroke-width: 2; filter: url(#shadow); }
+      .titlebar { fill: #f2f4f8; }
+      .text { font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; fill: #111827; }
+      .muted { fill: #6b7280; }
+      .label { font-size: 24px; font-weight: 650; }
+      .small { font-size: 19px; }
+      .tiny { font-size: 16px; }
+      .field { fill: #fff; stroke: #cbd5e1; stroke-width: 2; rx: 8; }
+      .off { fill: #fff; stroke: #94a3b8; stroke-width: 2; rx: 5; }
+      .radio { fill: #fff; stroke: #2563eb; stroke-width: 3; }
+      .dot { fill: #2563eb; }
+      .callout { fill: #ecfeff; stroke: #06b6d4; stroke-width: 3; rx: 16; }
+      .warn { fill: #fff7ed; stroke: #f97316; stroke-width: 3; rx: 16; }
+      .arrow { stroke: #06b6d4; stroke-width: 5; fill: none; marker-end: url(#arrowhead); }
+      .arrow-warn { stroke: #f97316; stroke-width: 5; fill: none; marker-end: url(#arrowheadWarn); }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#06b6d4"/>
+    </marker>
+    <marker id="arrowheadWarn" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#f97316"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1200" height="760"/>
+  <text class="text" x="70" y="70" font-size="34" font-weight="750">Preview / 미리보기 인쇄 설정 체크</text>
+  <text class="text muted" x="70" y="104" font-size="20">탐사 A4 8칸 라벨지는 자동 맞춤이 켜지면 칸이 밀립니다. 아래 4가지만 확인하세요.</text>
+
+  <rect class="window" x="80" y="140" width="720" height="540" rx="18"/>
+  <rect class="titlebar" x="80" y="140" width="720" height="54" rx="18"/>
+  <circle cx="115" cy="167" r="8" fill="#ff5f57"/>
+  <circle cx="143" cy="167" r="8" fill="#febc2e"/>
+  <circle cx="171" cy="167" r="8" fill="#28c840"/>
+  <text class="text" x="330" y="175" font-size="18" font-weight="650">프린트</text>
+
+  <text class="text label" x="130" y="240">프린터</text>
+  <rect class="field" x="300" y="214" width="420" height="42"/>
+  <text class="text small" x="320" y="242">사용할 프린터 선택</text>
+
+  <text class="text label" x="130" y="305">용지 크기</text>
+  <rect class="field" x="300" y="279" width="180" height="42"/>
+  <text class="text small" x="320" y="307">A4</text>
+
+  <text class="text label" x="130" y="372">방향</text>
+  <rect class="off" x="300" y="350" width="26" height="26"/>
+  <text class="text small" x="340" y="371">자동 회전</text>
+  <text class="text tiny" x="475" y="371" fill="#ef4444" font-weight="700">해제</text>
+
+  <line x1="120" y1="415" x2="760" y2="415" stroke="#e5e7eb" stroke-width="2"/>
+
+  <circle class="radio" cx="315" cy="464" r="13"/>
+  <circle class="dot" cx="315" cy="464" r="7"/>
+  <text class="text label" x="340" y="472">크기 조절</text>
+  <rect class="field" x="500" y="438" width="110" height="44"/>
+  <text class="text" x="528" y="469" font-size="24" font-weight="800">100</text>
+  <text class="text small" x="622" y="469">%</text>
+
+  <circle cx="315" cy="528" r="13" fill="#fff" stroke="#94a3b8" stroke-width="3"/>
+  <text class="text label" x="340" y="536">용지에 맞게 크기 조절</text>
+  <text class="text tiny" x="606" y="536" fill="#ef4444" font-weight="700">선택하지 않음</text>
+
+  <rect class="field" x="575" y="596" width="145" height="48" rx="10" fill="#2563eb" stroke="#2563eb"/>
+  <text x="625" y="627" font-size="21" font-weight="750" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif" fill="#fff">프린트</text>
+
+  <rect class="callout" x="845" y="215" width="290" height="96"/>
+  <text class="text" x="870" y="252" font-size="22" font-weight="800">1. 용지 크기 A4</text>
+  <text class="text muted" x="870" y="282" font-size="17">Letter/자동 선택이면 좌표가 틀어짐</text>
+  <path class="arrow" d="M845 270 C760 275 605 285 485 300"/>
+
+  <rect class="warn" x="845" y="350" width="290" height="126"/>
+  <text class="text" x="870" y="388" font-size="22" font-weight="800">2. 맞춤/축소 OFF</text>
+  <text class="text muted" x="870" y="418" font-size="17">‘용지에 맞게’ 선택 금지</text>
+  <text class="text muted" x="870" y="444" font-size="17">실제 크기 100%로 인쇄</text>
+  <path class="arrow-warn" d="M845 410 C780 425 700 462 618 462"/>
+
+  <rect class="callout" x="845" y="515" width="290" height="98"/>
+  <text class="text" x="870" y="553" font-size="22" font-weight="800">3. 자동 회전 해제</text>
+  <text class="text muted" x="870" y="583" font-size="17">세로 A4 그대로 출력</text>
+  <path class="arrow" d="M845 555 C760 515 625 380 480 365"/>
+
+  <text class="text" x="95" y="724" font-size="18" font-weight="700">마지막 확인:</text>
+  <text class="text muted" x="195" y="724" font-size="18">처음 1장은 일반 A4에 테스트 인쇄 → 라벨지 위에 겹쳐 칸 정렬 확인 → 그 다음 탐사 A4 8칸 라벨지에 인쇄</text>
+</svg>

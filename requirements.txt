@@ -1,0 +1,11 @@
+# eventnametag 런타임 의존성
+PyYAML>=6.0          # BI yaml 로드
+jsonschema>=4.21     # schema validation (G1)
+Pillow>=10.0         # raster 분석 (G3 잉크 커버리지)
+
+# extract_brand.py는 stdlib only (urllib + html.parser) — 추가 의존성 없음
+
+# Note: macOS 시스템 의존성 (별도 설치 필요)
+#   - Google Chrome (HTML → PDF)
+#   - sips (macOS 기본 제공)
+#   - Preview (macOS 기본 제공)

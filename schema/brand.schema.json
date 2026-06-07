@@ -1,0 +1,206 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/eventnametag/eventnametag/schema/brand.schema.json",
+  "title": "eventnametag BI 정의",
+  "description": "회사·단체 BI(브랜드 아이덴티티) yaml 정의. 컬러·폰트·워드마크·시그니처·skeleton 매칭을 한 파일에 정리한다.",
+  "type": "object",
+  "required": ["schema_version", "name", "slug", "colors", "wordmark"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "description": "스키마 버전. v0.1은 '1' 고정.",
+      "const": "1"
+    },
+    "name": {
+      "description": "표시용 풀 네임 (예: 'Delta Society').",
+      "type": "string",
+      "minLength": 1
+    },
+    "slug": {
+      "description": "파일명·CLI 호출명. 영문 소문자·숫자·하이픈만.",
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "website": {
+      "description": "회사·단체 공식 웹사이트 URL (선택).",
+      "type": "string",
+      "format": "uri"
+    },
+    "colors": {
+      "description": "컬러 토큰. 모두 #RRGGBB 6자리 hex.",
+      "type": "object",
+      "required": ["primary_dark", "primary_light"],
+      "additionalProperties": false,
+      "properties": {
+        "primary_dark": {
+          "description": "다크 면 / 다크바 색.",
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "primary_light": {
+          "description": "라이트 면 / 본문 배경 색.",
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "accent_1": {
+          "description": "액센트 1. 시그니처·강조에 사용.",
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "accent_2": {
+          "description": "액센트 2. 이벤트명·강조에 사용.",
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        },
+        "surface_subtle": {
+          "description": "보더·구분선 (선택).",
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$"
+        }
+      }
+    },
+    "fonts": {
+      "description": "폰트 정의 (선택). 생략 시 system-ui sans + monospace mono fallback.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "family": {"type": "string"},
+            "fallback": {"type": "string"}
+          }
+        },
+        "mono": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "family": {"type": "string"},
+            "fallback": {"type": "string"}
+          }
+        }
+      }
+    },
+    "wordmark": {
+      "description": "워드마크 텍스트 표기.",
+      "type": "object",
+      "required": ["text"],
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32
+        },
+        "case": {
+          "description": "표기 case. title=그대로 / upper=올캡 / lower=올소문자.",
+          "enum": ["title", "upper", "lower"],
+          "default": "title"
+        }
+      }
+    },
+    "signature": {
+      "description": "시그니처 마크 (선택). 없으면 워드마크만 표시.",
+      "type": "object",
+      "required": ["type"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "enum": ["gradient_orb", "icon_url", "none"]
+        },
+        "gradient": {
+          "description": "type=gradient_orb일 때 사용.",
+          "type": "object",
+          "required": ["inner", "outer"],
+          "additionalProperties": false,
+          "properties": {
+            "inner": {"type": "string", "pattern": "^#[0-9A-Fa-f]{6}$"},
+            "outer": {"type": "string", "pattern": "^#[0-9A-Fa-f]{6}$"}
+          }
+        },
+        "icon_url": {
+          "description": "type=icon_url일 때 사용. SVG/PNG 권장.",
+          "type": "string",
+          "format": "uri"
+        },
+        "size_mm": {
+          "description": "마크 크기 (mm). 네임택은 2-4mm 권장.",
+          "type": "number",
+          "minimum": 0.5,
+          "maximum": 20,
+          "default": 3.5
+        },
+        "position": {
+          "enum": ["left_of_wordmark", "right_of_wordmark", "replace_dot"],
+          "default": "left_of_wordmark"
+        }
+      }
+    },
+    "preferred_skeletons": {
+      "description": "선호 skeleton 목록. 비우면 기본 4종 모두 후보 (탐색 모드). 사용자 정의는 'custom-<name>' 형식.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^(r[1-4]|custom-[a-z0-9][a-z0-9-]*)$"
+      },
+      "uniqueItems": true,
+      "maxItems": 8
+    },
+    "print": {
+      "description": "인쇄 옵션 (선택).",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ink_coverage_warning": {
+          "description": "잉크 커버리지 % 임계. 시안 미리보기 직전에 raster 분석으로 검사.",
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "default": 25
+        }
+      }
+    },
+    "design": {
+      "description": "P1 디자인 다양성 (선택). 미설정 시 현행 렌더와 동일.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "layout_variant": {
+          "description": "셀 레이아웃 변형. 미설정 시 diagonal(기본·대각 컬러블록).",
+          "enum": ["diagonal", "name_hero", "intro_hero", "badge_first"]
+        },
+        "logo_svg_inline": {
+          "description": "워드마크 대체 인라인 SVG 원문. 새니타이즈 후 inject.",
+          "type": "string"
+        },
+        "illustration_svg_inline": {
+          "description": "장식 일러스트 인라인 SVG 원문 (벡터만). 새니타이즈 후 inject.",
+          "type": "string"
+        },
+        "motif_id": {
+          "description": "내장 모티프 라이브러리 ID (illustration 대안).",
+          "type": "string"
+        },
+        "pattern": {
+          "description": "배경 벡터 패턴.",
+          "enum": ["dot-grid", "stripe", "wave", "mesh-corner"]
+        },
+        "accent_shape": {
+          "description": "코너 강조 벡터 도형.",
+          "enum": ["triangle", "blob"]
+        },
+        "cell_template": {
+          "description": "v0.6: AI가 조판한 셀 한 칸 전체의 HTML/CSS 조각. {{name}}/{{company}}/{{role}} 토큰 + '<!-- textzone: x0,y0,x1,y1 -->' 메타 필수. 텍스트는 코드가 실제 폰트로 주입, SVG는 sanitize_svg 통과 필수. 검증 실패 시 스켈레톤 floor로 fallback.",
+          "type": "string"
+        }
+      }
+    },
+    "license": {
+      "description": "폰트 라이선스 명시 (권장). OFL/SIL 등 자유 라이선스가 안전.",
+      "type": "string"
+    }
+  }
+}

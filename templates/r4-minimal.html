@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>eventnametag · R4 (미니멀)</title>
+<style>
+  /* ─── BI 토큰 (generate.py가 yaml에서 읽어 inject) ─── */
+  :root {
+    --brand-dark: {{BRAND_DARK}};
+    --brand-light: {{BRAND_LIGHT}};
+    --brand-accent-1: {{BRAND_ACCENT_1}};
+    --brand-accent-2: {{BRAND_ACCENT_2}};
+    --brand-surface-subtle: {{BRAND_SURFACE_SUBTLE}};
+    --brand-font-body: {{BRAND_FONT_BODY}};
+    --brand-font-mono: {{BRAND_FONT_MONO}};
+    --signature-inner: {{SIGNATURE_INNER}};
+    --signature-outer: {{SIGNATURE_OUTER}};
+  }
+
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    color-adjust: exact;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: white;
+    font-family: var(--brand-font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* A4 시트 = 1페이지. 탐사 A4 8칸 라벨지: 2열 × 4행 = 8칸
+     여백·간격 R1과 동일. */
+  .a4-sheet {
+    width: 210mm;
+    height: 297mm;
+    box-sizing: border-box;
+    padding: 13mm 5mm 14mm;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(4, 1fr);
+    column-gap: 2mm;
+    row-gap: 0;
+    page-break-after: always;
+    background: white;
+  }
+  .a4-sheet:last-child {
+    page-break-after: auto;
+  }
+
+  .cell {
+    width: 99mm;
+    height: 67.5mm;
+    box-sizing: border-box;
+    padding: 2mm;
+    overflow: hidden;
+  }
+  .cell.empty {
+    /* 빈 칸 출력 X */
+  }
+
+  /* ─── R4: 미니멀 ───
+     다크바·세로띠·풀블리드 모두 없음. 셀 전체가 light 배경.
+     워드마크는 좌상단 코너의 마이크로 캡션, 시그니처는 동일 위치 옆.
+     이름이 셀 중앙. accent는 이름 아래 짧은 underline 한 줄로만. */
+  .tag {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: var(--brand-light);
+    color: var(--brand-dark);
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* 상단 영역 = R1의 .topbar 마크업 재사용. R4는 배경 투명 + 작은 코너 캡션 */
+  .topbar {
+    box-sizing: border-box;
+    padding: 4mm 6mm 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 3mm;
+    background: transparent;
+    color: var(--brand-dark);
+    flex-shrink: 0;
+    min-height: 6mm;
+  }
+
+  .brand-wrap {
+    display: flex;
+    align-items: center;
+    gap: 1.6mm;
+    font-size: 2.6mm;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+    white-space: nowrap;
+    color: var(--brand-dark);
+    opacity: 0.78;
+  }
+
+  .signature-orb {
+    width: 2.4mm;
+    height: 2.4mm;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: radial-gradient(circle at 50% 25%,
+      var(--signature-inner) 0%,
+      var(--signature-inner) 30%,
+      var(--signature-outer) 80%,
+      var(--signature-outer) 100%);
+  }
+
+  .event {
+    font-size: 2.4mm;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--brand-dark);
+    opacity: 0.6;
+    font-family: var(--brand-font-mono);
+    text-align: right;
+    line-height: 1.25;
+  }
+
+  /* 본문 — 이름 중앙. 이름 아래 accent underline 1줄. */
+  .body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 2mm 6mm 6mm;
+    position: relative;
+  }
+
+  .name {
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    color: var(--brand-dark);
+    /* 이름 직후 accent 컬러 underline 1줄 — ::after 가상 요소 */
+    position: relative;
+    padding-bottom: 2.5mm;
+  }
+  .name::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    width: 16mm;
+    height: 0.6mm;
+    background: var(--brand-accent-1);
+  }
+
+  .company {
+    font-weight: 600;
+    color: var(--brand-dark);
+    margin-top: 3mm;
+    line-height: 1.15;
+  }
+
+  .role {
+    font-size: 3.2mm;
+    color: #52525b;
+    font-family: var(--brand-font-mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-top: 1.2mm;
+  }
+
+  .intro {
+    font-size: 3.2mm;
+    color: #71717a;
+    font-style: italic;
+    margin-top: 3mm;
+    padding-top: 2mm;
+    border-top: 0;
+    max-width: 85%;
+  }
+
+  /* Blank 모드 — 코너 워드마크 유지 (build_blank_cell이 빈 .body.blank-body 생성) */
+  .body.blank-body {
+    justify-content: center;
+    gap: 6mm;
+    padding: 4mm 8mm 6mm;
+  }
+
+  @media screen {
+    body {
+      background: #333;
+      padding: 20px 0;
+    }
+    .a4-sheet {
+      margin: 0 auto 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    }
+  }
+
+  @media print {
+    body {
+      background: white;
+      padding: 0;
+    }
+    .a4-sheet {
+      margin: 0;
+      box-shadow: none;
+    }
+  }
+</style>
+</head>
+<body>
+<!-- CELLS_HERE -->
+</body>
+</html>

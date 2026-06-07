@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>eventnametag · R2 (좌측 세로 띠)</title>
+<style>
+  /* ─── BI 토큰 (generate.py가 yaml에서 읽어 inject) ─── */
+  :root {
+    --brand-dark: {{BRAND_DARK}};
+    --brand-light: {{BRAND_LIGHT}};
+    --brand-accent-1: {{BRAND_ACCENT_1}};
+    --brand-accent-2: {{BRAND_ACCENT_2}};
+    --brand-surface-subtle: {{BRAND_SURFACE_SUBTLE}};
+    --brand-font-body: {{BRAND_FONT_BODY}};
+    --brand-font-mono: {{BRAND_FONT_MONO}};
+    --signature-inner: {{SIGNATURE_INNER}};
+    --signature-outer: {{SIGNATURE_OUTER}};
+  }
+
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    color-adjust: exact;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: white;
+    font-family: var(--brand-font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* A4 시트 = 1페이지. 탐사 A4 8칸 라벨지: 2열 × 4행 = 8칸
+     여백: 상 13mm / 하 14mm / 좌·우 5mm
+     칸 간격 수평 2mm, 수직 0 — R1과 동일 */
+  .a4-sheet {
+    width: 210mm;
+    height: 297mm;
+    box-sizing: border-box;
+    padding: 13mm 5mm 14mm;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(4, 1fr);
+    column-gap: 2mm;
+    row-gap: 0;
+    page-break-after: always;
+    background: white;
+  }
+  .a4-sheet:last-child {
+    page-break-after: auto;
+  }
+
+  .cell {
+    width: 99mm;
+    height: 67.5mm;
+    box-sizing: border-box;
+    padding: 2mm;
+    overflow: hidden;
+  }
+  .cell.empty {
+    /* 빈 칸: 라벨지 재사용을 위해 출력 X */
+  }
+
+  /* ─── R2: 좌측 세로 띠 + 우측 본문 ───
+     .tag를 grid 2열로 분할: 22mm 다크 띠 / 나머지 본문.
+     R1의 .topbar 마크업을 그대로 사용하되 CSS로 좌측 세로 띠로 변환. */
+  .tag {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 22mm 1fr;
+    grid-template-rows: 1fr;
+    background: var(--brand-light);
+    color: var(--brand-dark);
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* 좌측 세로 띠 = R1의 .topbar 위치 변경 */
+  .topbar {
+    grid-column: 1;
+    grid-row: 1;
+    box-sizing: border-box;
+    padding: 5mm 2mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4mm;
+    color: var(--brand-light);
+    background: var(--brand-dark);
+  }
+
+  .brand-wrap {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 3mm;
+    font-size: 4mm;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    /* 워드마크 텍스트 회전 — 아래에서 위로 읽힘 */
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    white-space: nowrap;
+  }
+  /* 시그니처는 회전 영향 받지 않도록 자식만 transform 해제 */
+  .brand-wrap .signature-orb {
+    writing-mode: horizontal-tb;
+    transform: rotate(180deg);
+  }
+
+  .signature-orb {
+    width: 3.5mm;
+    height: 3.5mm;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: radial-gradient(circle at 50% 25%,
+      var(--signature-inner) 0%,
+      var(--signature-inner) 30%,
+      var(--signature-outer) 80%,
+      var(--signature-outer) 100%);
+  }
+
+  /* 행사명 — 띠 아래쪽 가로 끝, 회전된 작은 캡션 */
+  .event {
+    font-size: 2.4mm;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--brand-accent-2);
+    font-family: var(--brand-font-mono);
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    line-height: 1.25;
+    text-align: center;
+  }
+
+  /* 본문 — 우측, 중앙 정렬 */
+  .body {
+    grid-column: 2;
+    grid-row: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 5mm 5mm 5mm 6mm;
+  }
+
+  .name {
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    /* font-size는 generate.py가 inline 주입 (기본 14mm) */
+  }
+
+  .company {
+    font-weight: 600;
+    color: var(--brand-dark);
+    margin-top: 3mm;
+    line-height: 1.15;
+    /* font-size는 generate.py가 inline 주입 (기본 5.5mm) */
+  }
+
+  .role {
+    font-size: 3.2mm;
+    color: #52525b;
+    font-family: var(--brand-font-mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-top: 1.2mm;
+  }
+
+  .intro {
+    font-size: 3.2mm;
+    color: #71717a;
+    font-style: italic;
+    margin-top: 3mm;
+    padding-top: 2mm;
+    border-top: 0.3mm dashed var(--brand-accent-1);
+    max-width: 90%;
+  }
+
+  /* Blank 모드 — 우측 본문 영역 백지 (build_blank_cell이 빈 .body.blank-body 생성) */
+  .body.blank-body {
+    justify-content: center;
+    gap: 6mm;
+    padding: 6mm 6mm 6mm 8mm;
+  }
+
+  /* 화면 미리보기 */
+  @media screen {
+    body {
+      background: #333;
+      padding: 20px 0;
+    }
+    .a4-sheet {
+      margin: 0 auto 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    }
+  }
+
+  @media print {
+    body {
+      background: white;
+      padding: 0;
+    }
+    .a4-sheet {
+      margin: 0;
+      box-shadow: none;
+    }
+  }
+</style>
+</head>
+<body>
+<!-- CELLS_HERE -->
+</body>
+</html>

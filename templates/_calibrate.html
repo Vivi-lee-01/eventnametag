@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>탐사 A4 8칸 라벨지 정렬 테스트 (eventnametag)</title>
+<style>
+  @page { size: A4; margin: 0; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  html, body {
+    margin: 0; padding: 0;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    background: white; color: #0a0a0b;
+  }
+  /* A4 시트 = 1페이지. 탐사 A4 8칸 라벨지: 2열 × 4행 = 8칸
+     좌표 source of truth는 production template과 동일하다.
+     여백: 상 13mm / 하 14mm / 좌·우 5mm
+     칸 간격 수평 2mm, 수직 0 */
+  .a4-sheet {
+    width: 210mm;
+    height: 297mm;
+    box-sizing: border-box;
+    padding: 13mm 5mm 14mm;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(4, 1fr);
+    column-gap: 2mm;
+    row-gap: 0;
+    background: white;
+  }
+  .cell {
+    width: 99mm;
+    height: 67.5mm;
+    border: 0.4mm solid #0a0a0b;
+    border-radius: 1mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    padding: 3mm;
+    box-sizing: border-box;
+  }
+  .cell .label {
+    font-size: 3mm;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+  }
+  .cell .dim {
+    font-size: 2.5mm;
+    color: #52525b;
+    margin-top: 2mm;
+  }
+  .cell .pos {
+    position: absolute;
+    top: 2mm; left: 2mm;
+    font-size: 2mm;
+    color: #71717a;
+  }
+  /* 중앙 십자선 — 정렬 확인용 */
+  .crosshair::before, .crosshair::after {
+    content: "";
+    position: absolute;
+    background: #C0F0FB;
+  }
+  .crosshair::before {
+    width: 8mm; height: 0.3mm;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .crosshair::after {
+    width: 0.3mm; height: 8mm;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  /* 모서리 마커 */
+  .corner {
+    position: absolute;
+    width: 4mm; height: 4mm;
+    border-color: #0a0a0b;
+  }
+  .corner.tl { top: 0; left: 0; border-top: 0.4mm solid; border-left: 0.4mm solid; }
+  .corner.tr { top: 0; right: 0; border-top: 0.4mm solid; border-right: 0.4mm solid; }
+  .corner.bl { bottom: 0; left: 0; border-bottom: 0.4mm solid; border-left: 0.4mm solid; }
+  .corner.br { bottom: 0; right: 0; border-bottom: 0.4mm solid; border-right: 0.4mm solid; }
+  /* ruler — 상단에 mm 눈금 */
+  .ruler {
+    position: absolute;
+    bottom: 3mm;
+    width: 40mm;
+    height: 3mm;
+    border-bottom: 0.3mm solid #0a0a0b;
+  }
+  .ruler::before {
+    content: "← 40mm →";
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    font-size: 2mm;
+    bottom: -4mm;
+    color: #52525b;
+  }
+  .ruler span {
+    position: absolute; bottom: 0;
+    width: 0.2mm; height: 1.5mm;
+    background: #0a0a0b;
+  }
+  .ruler span:nth-child(1) { left: 0; }
+  .ruler span:nth-child(2) { left: 10mm; }
+  .ruler span:nth-child(3) { left: 20mm; }
+  .ruler span:nth-child(4) { left: 30mm; }
+  .ruler span:nth-child(5) { left: 40mm; }
+
+  @media screen {
+    body { background: #333; padding: 20px 0; }
+    .a4-sheet { margin: 0 auto; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+  }
+</style>
+</head>
+<body>
+<div class="a4-sheet">
+  <div class="cell crosshair">
+    <span class="corner tl"></span><span class="corner tr"></span>
+    <span class="corner bl"></span><span class="corner br"></span>
+    <span class="pos">R1·C1</span>
+    <div class="label">CELL 1</div>
+    <div class="dim">99 × 67.5 mm</div>
+    <div class="ruler"><span></span><span></span><span></span><span></span><span></span></div>
+  </div>
+  <div class="cell crosshair">
+    <span class="corner tl"></span><span class="corner tr"></span>
+    <span class="corner bl"></span><span class="corner br"></span>
+    <span class="pos">R1·C2</span>
+    <div class="label">CELL 2</div>
+    <div class="dim">99 × 67.5 mm</div>
+  </div>
+  <div class="cell crosshair">
+    <span class="corner tl"></span><span class="corner tr"></span>
+    <span class="corner bl"></span><span class="corner br"></span>
+    <span class="pos">R2·C1</span>
+    <div class="label">CELL 3</div>
+    <div class="dim">99 × 67.5 mm</div>
+  </div>
+  <div class="cell crosshair">
+    <span class="corner tl"></span><span class="corner tr"></span>
+    <span class="corner bl"></span><span class="corner br"></span>
+    <span class="pos">R2·C2</span>
+    <div class="label">CELL 4</div>
+    <div class="dim">99 × 67.5 mm</div>
+  </div>
+  <div class="cell crosshair">
+    <span class="corner tl"></span><span class="corner tr"></span>
+    <span class="corner bl"></span><span class="corner br"></span>
+    <span class="pos">R3·C1</span>
+    <div class="label">CELL 5</div>
+    <div class="dim">99 × 67.5 mm</div>
+  </div>
+  <div class="cell crosshair">
+    <span class="corner tl"></span><span class="corner tr"></span>
+    <span class="corner bl"></span><span class="corner br"></span>
+    <span class="pos">R3·C2</span>
+    <div class="label">CELL 6</div>
+    <div class="dim">99 × 67.5 mm</div>
+  </div>
+  <div class="cell crosshair">
+    <span class="corner tl"></span><span class="corner tr"></span>
+    <span class="corner bl"></span><span class="corner br"></span>
+    <span class="pos">R4·C1</span>
+    <div class="label">CELL 7</div>
+    <div class="dim">99 × 67.5 mm</div>
+  </div>
+  <div class="cell crosshair">
+    <span class="corner tl"></span><span class="corner tr"></span>
+    <span class="corner bl"></span><span class="corner br"></span>
+    <span class="pos">R4·C2</span>
+    <div class="label">CELL 8</div>
+    <div class="dim">99 × 67.5 mm</div>
+  </div>
+</div>
+</body>
+</html>

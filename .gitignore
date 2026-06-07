@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.pytest_cache/
+.venv/
+venv/
+env/
+
+# Claude / Hermes / OMC / Superpowers state
+.omc/
+.superpowers/
+.claude/
+.hermes/
+.claude-handoff.json
+
+# 임시 산출물 (HTML, PDF, PNG 시안·인쇄용)
+~/.claude/tmp/
+tmp/
+out/
+*.tmp.html
+*.tmp.pdf
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*~
+
+# 사용자 BI (외부 디렉토리 사용 — 이 repo에는 포함 X)
+# ~/.config/eventnametag/ 는 사용자 home에 별도 저장됨
+
+# Lock files
+poetry.lock
+Pipfile.lock

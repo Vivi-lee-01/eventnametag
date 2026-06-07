@@ -1,0 +1,47 @@
+schema_version: "1"
+
+# ─── 메타 ───
+name: "Delta Society"
+slug: "delta-society"
+website: "https://deltasociety.xyz"
+
+# ─── 컬러 토큰 ───
+colors:
+  primary_dark: "#0a0a0b"
+  primary_light: "#fafafa"
+  accent_1: "#C0F0FB"        # 민트
+  accent_2: "#FFEA00"        # 옐로
+  surface_subtle: "#27272a"
+
+# ─── 타이포 ───
+fonts:
+  body:
+    family: "Geist Sans"
+    fallback: "system-ui, -apple-system, Inter, sans-serif"
+  mono:
+    family: "Geist Mono"
+    fallback: "ui-monospace, SF Mono, monospace"
+
+# ─── 워드마크 ───
+wordmark:
+  text: "Delta Society"
+  case: "title"
+
+# ─── 시그니처 ───
+signature:
+  type: "gradient_orb"
+  gradient:
+    inner: "#C0F0FB"
+    outer: "#FFEA00"
+  size_mm: 3.5
+  position: "left_of_wordmark"
+
+# ─── Skeleton 매칭 ───
+preferred_skeletons: [r1, r3]
+
+# ─── 인쇄 옵션 ───
+print:
+  ink_coverage_warning: 25
+
+# ─── 라이선스 ───
+license: "Geist Sans/Mono — SIL OFL 1.1"

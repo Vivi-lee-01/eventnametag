@@ -1,0 +1,39 @@
+schema_version: "1"
+
+# ─── 메타 ───
+# 전형적 IT 회사 톤 — 네이비·블루 계열
+name: "Corporate Blue"
+slug: "corporate-blue"
+
+# ─── 컬러 토큰 ───
+colors:
+  primary_dark: "#0f1e3d"        # 딥 네이비
+  primary_light: "#ffffff"
+  accent_1: "#2563eb"            # 메인 블루
+  accent_2: "#60a5fa"            # 라이트 블루
+  surface_subtle: "#1e293b"      # 슬레이트
+
+# ─── 타이포 ───
+fonts:
+  body:
+    family: "Inter"
+    fallback: "system-ui, -apple-system, sans-serif"
+  mono:
+    family: "JetBrains Mono"
+    fallback: "ui-monospace, SF Mono, monospace"
+
+# ─── 워드마크 ───
+wordmark:
+  text: "Corporate Blue"
+  case: "title"
+
+# ─── 시그니처 (없음) ───
+signature:
+  type: "none"
+
+# ─── Skeleton 매칭 ───
+# preferred_skeletons 생략 → 4종 모두 후보 (탐색 모드)
+
+# ─── 인쇄 옵션 ───
+print:
+  ink_coverage_warning: 22
