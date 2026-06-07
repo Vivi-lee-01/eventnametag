@@ -60,7 +60,6 @@ OUTPUT_DIR = Path.home() / ".claude" / "tmp" / "eventnametag"
 
 CHROME_BIN = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 COUPANG_STANDARD_URL = "https://link.coupang.com/a/eGNFOI"
-COUPANG_GLOSSY_LASER_URL = "https://link.coupang.com/a/eGNNaT"
 COUPANG_URL = COUPANG_STANDARD_URL
 
 # 사용자는 skeleton ID보다 “행사 분위기”를 먼저 이해한다. Style pack은
@@ -84,6 +83,7 @@ STYLE_PACKS = {
             "surface_subtle": "#E5E7EB",
         },
         "preferred_skeletons": ["r1", "r2"],
+        "layout_variant": "name_hero",
         "visual_motif": {"type": "quiet_rule"},
         "paper": "standard",
     },
@@ -104,6 +104,7 @@ STYLE_PACKS = {
             "surface_subtle": "#FED7AA",
         },
         "preferred_skeletons": ["r2", "r1"],
+        "layout_variant": "intro_hero",
         "visual_motif": {"type": "confetti"},
         "paper": "glossy_laser",
     },
@@ -124,6 +125,7 @@ STYLE_PACKS = {
             "surface_subtle": "#D7ECFF",
         },
         "preferred_skeletons": ["r2", "r1"],
+        "layout_variant": "badge_first",
         "visual_motif": {"type": "recruiting_flow"},
         "paper": "standard",
     },
@@ -144,6 +146,7 @@ STYLE_PACKS = {
             "surface_subtle": "#CBD5E1",
         },
         "preferred_skeletons": ["r2", "r1"],
+        "layout_variant": "badge_first",
         "visual_motif": {"type": "role_badge"},
         "paper": "standard",
     },
@@ -164,6 +167,7 @@ STYLE_PACKS = {
             "surface_subtle": "#D8D7FF",
         },
         "preferred_skeletons": ["r3", "r1"],
+        "layout_variant": "diagonal",
         "visual_motif": {"type": "neon_grid"},
         "paper": "glossy_laser",
     },
@@ -184,6 +188,7 @@ STYLE_PACKS = {
             "surface_subtle": "#E7DEC9",
         },
         "preferred_skeletons": ["r4", "r1"],
+        "layout_variant": "name_hero",
         "visual_motif": {"type": "gold_corner"},
         "paper": "standard",
     },
@@ -204,6 +209,7 @@ STYLE_PACKS = {
             "surface_subtle": "#FED7AA",
         },
         "preferred_skeletons": ["r2", "r1"],
+        "layout_variant": "intro_hero",
         "visual_motif": {"type": "sticker_scene"},
         "paper": "glossy_laser",
     },
@@ -224,6 +230,7 @@ STYLE_PACKS = {
             "surface_subtle": "#D1FAE5",
         },
         "preferred_skeletons": ["r1", "r2"],
+        "layout_variant": "name_hero",
         "visual_motif": {"type": "qr_corner"},
         "paper": "standard",
     },
@@ -247,15 +254,25 @@ def print_label_paper_guidance() -> None:
     print(file=sys.stderr)
     print("📦 실제 인쇄 준비물", file=sys.stderr)
     print("  - 라벨지: 탐사 A4 8칸 라벨지 / 99×67.5mm", file=sys.stderr)
-    print(f"  - 기본 라벨지: {COUPANG_STANDARD_URL}", file=sys.stderr)
-    print(f"  - 고급 고광택 레이저프린터 전용 라벨지: {COUPANG_GLOSSY_LASER_URL}", file=sys.stderr)
+    print(f"  - 구매 링크: {COUPANG_STANDARD_URL}", file=sys.stderr)
     print("  - Preview에 열린 300dpi PNG를 인쇄 (PDF·lpr 직접 인쇄 금지)", file=sys.stderr)
     print("  - Cmd+P → 용지 크기 A4", file=sys.stderr)
     print("  - '크기 조절' 선택 후 100% 입력", file=sys.stderr)
     print("  - '용지에 맞게 크기 조절/Scale to Fit/자동 맞춤'은 반드시 OFF", file=sys.stderr)
     print("  - 자동 회전 OFF", file=sys.stderr)
     print("  - 첫 장은 일반 A4로 테스트 후 라벨지에 겹쳐 정렬을 확인하세요", file=sys.stderr)
+    print("  - 프린터마다 라벨지 급지 방향이 다를 수 있습니다.", file=sys.stderr)
+    print("    일반 A4 용지에 펜으로 앞/위 방향을 표시한 뒤 간단히 테스트 인쇄해서", file=sys.stderr)
+    print("    라벨지의 상하·앞뒤 출력 방향을 맞춘 후 본 인쇄를 진행하세요! :)", file=sys.stderr)
     print("    이 링크는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.", file=sys.stderr)
+
+
+def open_url_in_chrome(url: str) -> None:
+    """구매 링크는 macOS Chrome에서 바로 연다. 실패하면 기본 브라우저로 fallback."""
+    try:
+        subprocess.run(["open", "-a", "Google Chrome", url], check=True, capture_output=True)
+    except (OSError, subprocess.CalledProcessError):
+        webbrowser.open(url)
 
 
 def apply_style_pack(brand: dict, style_id: str) -> dict:
@@ -273,6 +290,13 @@ def apply_style_pack(brand: dict, style_id: str) -> dict:
     themed["colors"] = dict(pack["colors"])
     themed["preferred_skeletons"] = list(pack["preferred_skeletons"])
     themed["visual_motif"] = dict(pack["visual_motif"])
+    design = dict(themed.get("design") or {})
+    # showcase/quick에서 모든 카드가 diagonal 기본값으로 떨어지면 실제 미리보기가
+    # 거의 같아 보인다. 제품 카드별 정보 구조를 즉시 체감할 수 있게 pack이
+    # 의도한 layout variant를 brand design에 주입한다. 사용자가 명시한 cell_template은
+    # 보존하되, style pack 미리보기에서는 layout만 pack 기준으로 덮어쓴다.
+    design["layout_variant"] = pack["layout_variant"]
+    themed["design"] = design
     themed["style_pack"] = {
         "id": style_id,
         "label": pack["label"],
@@ -283,6 +307,7 @@ def apply_style_pack(brand: dict, style_id: str) -> dict:
         "internal_layout": pack["internal_layout"],
         "print_risk": pack["print_risk"],
         "user_explanation": pack["user_explanation"],
+        "layout_variant": pack["layout_variant"],
     }
     themed["print"] = dict(themed.get("print") or {})
     themed["print"]["recommended_paper"] = pack["paper"]
@@ -490,27 +515,8 @@ DEFAULT_SIGNATURE_OUTER = "#666666"
 # ─────────────────────── State (라벨지 분기) ───────────────────────
 
 def choose_label_paper_url() -> tuple[str, str]:
-    """주문할 라벨지 상품을 선택한다. 비대화형에서는 기본 라벨지를 반환한다."""
-    options = [
-        ("기본 탐사 A4 8칸 라벨지", COUPANG_STANDARD_URL),
-        ("고급 고광택 레이저프린터 전용 라벨지", COUPANG_GLOSSY_LASER_URL),
-    ]
-    if not sys.stdin.isatty():
-        return options[0]
-    print("\n어떤 라벨지를 주문할까요?", file=sys.stderr)
-    print("  1. 기본 탐사 A4 8칸 라벨지", file=sys.stderr)
-    print("  2. 고급 고광택 레이저프린터 전용 라벨지", file=sys.stderr)
-    while True:
-        try:
-            ans = input("> ").strip()
-        except (EOFError, KeyboardInterrupt):
-            print("\n기본 라벨지 링크를 안내합니다.", file=sys.stderr)
-            return options[0]
-        if ans in ("1", ""):
-            return options[0]
-        if ans == "2":
-            return options[1]
-        print("1 또는 2를 입력해 주세요.", file=sys.stderr)
+    """주문 CTA는 기본 탐사 A4 8칸 라벨지 하나만 제공한다."""
+    return ("기본 탐사 A4 8칸 라벨지", COUPANG_STANDARD_URL)
 
 def load_state() -> dict:
     """state.json 로드. 손상이면 백업 후 빈 dict (G7)."""
@@ -579,12 +585,12 @@ def ask_label_paper_once() -> None:
     if state.get("label_paper", {}).get("status") in ("ordered", "owned"):
         return  # 이미 답함
 
-    print("\n📦 라벨지 준비물", file=sys.stderr)
-    print("네임택을 실제로 붙여 인쇄하려면 탐사 A4 8칸 라벨지 (99×67.5mm)가 필요합니다.", file=sys.stderr)
-    print("오늘 주문하면 내일 받아서, 만든 네임택을 바로 출력할 수 있습니다.", file=sys.stderr)
+    print("\n잠깐! 이 스킬을 통해 행사용 네임택을 인쇄하려면 탐사 A4 8칸 라벨지 (99mm x 67.5mm)가 필요해요.", file=sys.stderr)
+    print("오늘 주문하면 내일 받아 바로 출력할 수 있어요. 어떻게 진행할까요?", file=sys.stderr)
+    print(file=sys.stderr)
     print("  1. 쿠팡에서 주문할게요", file=sys.stderr)
     print("  2. 라벨지를 이미 가지고 있어요", file=sys.stderr)
-    print("  3. 일단 preview만 먼저 볼게요", file=sys.stderr)
+    print("  3. 라벨지는 나중에 준비하고, 행사 정보부터 입력할게요", file=sys.stderr)
     while True:
         try:
             ans = input("> ").strip()
@@ -598,10 +604,11 @@ def ask_label_paper_once() -> None:
             state["label_paper"]["product"] = product_name
             state["label_paper"]["answered_at"] = datetime.now().isoformat(timespec="seconds")
             save_state(state)
-            print(f"\n🛒 쿠팡 페이지를 브라우저에서 엽니다: {product_name}", file=sys.stderr)
+            print(f"\n🛒 Chrome에서 기본 탐사 A4 8칸 라벨지 구매 페이지를 엽니다.", file=sys.stderr)
             print(f"   {product_url}", file=sys.stderr)
+            print("   이 링크는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.", file=sys.stderr)
             print("   라벨지 도착 후 다시 호출해 주세요. 다시 묻지 않습니다.", file=sys.stderr)
-            webbrowser.open(product_url)
+            open_url_in_chrome(product_url)
             sys.exit(0)
         elif ans == "2":
             state.setdefault("label_paper", {})
@@ -611,7 +618,8 @@ def ask_label_paper_once() -> None:
             print("\n✅ 라벨지 보유 확인. 이제 BI를 등록하시거나 행사 네임택을 만드실 수 있습니다.", file=sys.stderr)
             return
         elif ans == "3":
-            print("\n좋습니다. preview를 먼저 만든 뒤, 출력 단계에서 라벨지를 다시 안내하겠습니다.", file=sys.stderr)
+            print("\n좋습니다. 행사명, 원하는 무드, BI/브랜드 단서를 자유롭게 입력해 주세요.", file=sys.stderr)
+            print("이미지, 웹사이트 URL, 로고 파일, 디자인 가이드 md, 참고 문서도 괜찮습니다.", file=sys.stderr)
             return
         else:
             print("1, 2, 또는 3을 입력해 주세요.", file=sys.stderr)
@@ -626,9 +634,10 @@ def order_paper() -> None:
     state["label_paper"]["product"] = product_name
     state["label_paper"]["last_order_at"] = datetime.now().isoformat(timespec="seconds")
     save_state(state)
-    print(f"🛒 쿠팡 라벨지 페이지를 브라우저에서 엽니다: {product_name}", file=sys.stderr)
+    print(f"🛒 Chrome에서 기본 탐사 A4 8칸 라벨지 구매 페이지를 엽니다.", file=sys.stderr)
     print(f"   {product_url}", file=sys.stderr)
-    webbrowser.open(product_url)
+    print("   이 링크는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.", file=sys.stderr)
+    open_url_in_chrome(product_url)
 
 
 # ─────────────────────── BI yaml 로드 ───────────────────────
@@ -1157,15 +1166,18 @@ def _illustration_html(brand: dict) -> str:
     새니타이즈 결과가 비면 미표시(빈 문자열).
     """
     design = brand.get("design") or {}
+    inline_raw = design.get("illustration_svg_inline") or ""
+    motif_id = design.get("motif_id") or ""
+    if not inline_raw and not motif_id:
+        return ""
+
     import _svg_safe  # 지연 import
     # 1) 인라인 일러스트 우선
-    inline_raw = design.get("illustration_svg_inline") or ""
     if inline_raw:
         clean = _svg_safe.sanitize_svg(inline_raw)
         if clean:
             return f'<span class="illustration-slot">{clean}</span>'
     # 2) 내장 모티프 라이브러리 fallback
-    motif_id = design.get("motif_id") or ""
     if motif_id:
         import _motifs  # 지연 import
         clean = _svg_safe.sanitize_svg(_motifs.get_motif(motif_id))
@@ -1608,10 +1620,7 @@ def build_preview_html(brand: dict, event: str, skeleton_ids: list[str], sample_
 
 
 def _paper_recommendation_label(brand: dict) -> str:
-    paper = (brand.get("print") or {}).get("recommended_paper", "standard")
-    if paper == "glossy_laser":
-        return "고급 고광택 라벨지 추천"
-    return "기본 탐사 A4 8칸 라벨지 추천"
+    return "기본 탐사 A4 8칸 라벨지 기준"
 
 
 def build_showcase_html(brand: dict, event: str, sample_attendees: list[dict]) -> str:
@@ -1674,7 +1683,7 @@ def build_showcase_html(brand: dict, event: str, sample_attendees: list[dict]) -
   <p class="lead">BI를 길게 묻기 전에, 행사 목적별로 정보 구조가 다른 8개 제품 카드를 먼저 보여줍니다. 마음에 드는 방향을 고른 뒤 로고·컬러·명단만 보정하면 됩니다.</p>
 </header>
 <main class="grid">{cards_html}</main>
-<footer>풀컬러·그라디언트·일러스트형은 고급 고광택 레이저프린터 전용 라벨지를 권장합니다. 기본형/운영형은 기본 탐사 A4 8칸 라벨지가 더 경제적입니다.</footer>
+<footer>모든 시안은 기본 탐사 A4 8칸 라벨지 기준으로 생성합니다. 풀컬러·그라디언트·일러스트형은 대량 인쇄 전 일반 A4 테스트를 먼저 권장합니다.</footer>
 </body></html>"""
 
 
@@ -2208,6 +2217,8 @@ def finalize_output(
     print("  3. 자동회전(Auto Rotate): 해제 (세로 그대로)", file=sys.stderr)
     print("  4. 첫 장은 일반 A4 용지로 테스트 인쇄 → 라벨지에 겹쳐 칸 정렬 확인 후 라벨지 인쇄", file=sys.stderr)
     print("  5. 인쇄 대상은 Preview에 열린 이 PNG (PDF·lpr 직접 인쇄 금지)", file=sys.stderr)
+    print("  6. 프린터마다 라벨지 급지 방향이 다를 수 있으니, 일반 A4에 펜으로 앞/위 방향을 표시한 뒤", file=sys.stderr)
+    print("     간단한 테스트 인쇄로 라벨지의 상하·앞뒤 출력 방향을 맞춘 후 본 인쇄하세요! :)", file=sys.stderr)
     print("  ※ PNG에 300dpi 메타데이터가 박혀 있어 '맞춤' 없이도 실제 크기(A4)로 출력됩니다.", file=sys.stderr)
 
     # v0.2: 인쇄 후 정렬 어긋남 발견 시 사용자 안내
@@ -2478,18 +2489,22 @@ def run_quick(args) -> None:
 
     skeleton_ids = get_candidate_skeletons(brand)
     ts = datetime.now().strftime("%Y%m%d-%H%M%S")
-    preview_path = _write_preview(brand, event, skeleton_ids, attendees, "quick", ts)
     print(f"\n{format_parse_summary(len(attendees), dropped)}", file=sys.stderr)
-    print(f"✓ 시안 preview 생성: {preview_path}", file=sys.stderr)
 
-    chosen = _choose_skeleton(skeleton_ids)
+    # quick은 사용자가 “바로 만들어줘”라고 들어온 경로다.
+    # 별도 preview 탭/스타일 선택을 만들지 않고, BI/명단 기준 첫 안전 스타일로 바로 출력한다.
+    # 디자인 비교가 필요한 사용자는 showcase/demo를 명시적으로 호출한다.
+    chosen = skeleton_ids[0]
+    print(f"✓ 스타일 자동 선택: {skeleton_choice_label(chosen)}", file=sys.stderr)
     out = _write_output_html(attendees, brand, event, chosen, ts, fill_blanks=args.fill_blanks, prefix="quick-nametag")
     pages = (len(attendees) + 7) // 8
-    print(f"✓ 출력 HTML 생성: {out}", file=sys.stderr)
+    print("✓ 인쇄용 네임택 생성", file=sys.stderr)
     print(f"  행사: {event}", file=sys.stderr)
     print(f"  인원/페이지: {len(attendees)}명 / {pages}페이지", file=sys.stderr)
+    if args.html_only:
+        print(f"  HTML-only 출력 파일: {out}", file=sys.stderr)
     # P0: 기본은 인쇄안전 닫힌 루프. escape hatch(--ignore-ink/--no-contrast-check)는 finalize_output에서 우회.
-    # skeleton: 사용자가 preview에서 고른 chosen을 전달해 게이트 재빌드와 최종 출력이 일치하게 한다.
+    # skeleton: quick에서 자동 선택한 chosen을 전달해 게이트 재빌드와 최종 출력이 일치하게 한다.
     finalize_output(
         out, args.html_only, brand=brand,
         ignore_ink=args.ignore_ink, no_contrast_check=getattr(args, "no_contrast_check", False),

@@ -23,7 +23,7 @@ eventnametag를 Claude와 동일하게 실행하기 위한 진입점이다. 전�
 | 의도 | 사용자 발화 | 실행 |
 |---|---|---|
 | demo | "샘플로 보여줘", "분위기 먼저" | `bin/eventnametag demo --html-only` (샘플 브랜드+명단 preview) |
-| quick | "이 행사 네임택 만들어줘" | `bin/eventnametag quick --event "..." --brand <slug> --file guests.csv` |
+| quick | "이 행사 네임택 만들어줘" | `bin/eventnametag quick --event "..." --brand <slug> --file guests.csv` — preview 없이 바로 PNG 출력 |
 | print | "이 파일로 인쇄해줘" | `python3 scripts/generate.py --brand <slug> --event "..." --file guests.csv` |
 | fix | "정렬이 밀렸어" | `~/.config/eventnametag/calibration.yaml`에 `x`/`y`(mm) 저장 → 재실행 |
 
@@ -68,7 +68,8 @@ Preview에서 사람이 직접 Cmd+P 하는 것뿐이다.
 3. 자동회전(Auto Rotate): 해제 (세로 그대로)
 4. 첫 장은 일반 A4로 테스트 인쇄 → 라벨지에 겹쳐 칸 정렬 확인 후 라벨지 인쇄
 5. 인쇄 대상은 **Preview에 열린 PNG** (`open -a Preview <png>`)
-6. PNG에 300dpi 메타데이터가 박혀 있어 '맞춤' 없이도 실제 크기(A4 = 2480×3508px)로 출력됨
+6. 프린터마다 라벨지 인쇄 방향이 다를 수 있으므로 일반 A4에 펜으로 앞/위 방향을 표시해 테스트 인쇄하고, 라벨지의 상하·앞뒤 출력 방향을 확인
+7. PNG에 300dpi 메타데이터가 박혀 있어 '맞춤' 없이도 실제 크기(A4 = 2480×3508px)로 출력됨
 
 라벨지: 탐사 A4 8칸 라벨지 / 99×67.5mm. 정렬이 밀리면 자연어 보정값을 `calibration.yaml`의
 `x`(오른쪽 +, 왼쪽 -) / `y`(아래쪽 +, 위쪽 -) mm로 저장한다.
@@ -159,11 +160,10 @@ design:
 완료했습니다.
 - 행사: <행사명>
 - 사용한 스타일: <행사 무드/브랜드 톤>
-- 미리보기: <html 경로>
 - 출력 파일: <png 경로>
 
 인쇄 전 체크: 용지 A4 / 크기 100% / 맞춤(Scale to Fit) OFF / 자동회전 해제 /
-첫 장은 일반 A4 테스트 / Preview의 PNG 인쇄 / 탐사 A4 8칸 라벨지
+첫 장은 일반 A4 테스트 / 펜 표시로 프린터별 급지 방향 확인 / Preview의 PNG 인쇄 / 탐사 A4 8칸 라벨지
 ```
 
-> 전체 UX 원칙(대화형 흐름, 디자인 8종 선택 기준, 라벨지 CTA, 사업성 메모)은 `SKILL.md` 참조.
+> 전체 UX 원칙(대화형 흐름, 디자인 8종 선택 기준, 라벨지 CTA, 사업성 메모)은 `SKILL.md` 참조. quick 경로에서는 preview HTML을 사용자에게 제공하지 않는다.

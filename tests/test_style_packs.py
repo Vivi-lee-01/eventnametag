@@ -1,9 +1,12 @@
 import importlib.util
+import contextlib
+import io
 import os
 import re
 import subprocess
 import tempfile
 import unittest
+from unittest import mock
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -61,6 +64,7 @@ class StylePackTests(unittest.TestCase):
             "paper",
             "user_explanation",
             "preferred_skeletons",
+            "layout_variant",
             "visual_motif",
         }
         for style_id, pack in generate.STYLE_PACKS.items():
@@ -68,8 +72,29 @@ class StylePackTests(unittest.TestCase):
                 self.assertTrue(required_fields.issubset(pack.keys()))
                 self.assertIsInstance(pack["fields"], list)
                 self.assertGreaterEqual(len(pack["fields"]), 2)
+                self.assertIn(pack["layout_variant"], generate.LAYOUT_VARIANTS)
                 self.assertNotRegex(pack["user_explanation"], r"skeleton|R[1-4]")
                 self.assertNotRegex(pack["label"], r"skeleton|R[1-4]")
+
+    def test_style_pack_sets_layout_variant_so_showcase_cards_are_not_all_diagonal(self):
+        brand = {
+            "name": "LiveClass",
+            "slug": "liveclass",
+            "colors": {"primary_dark": "#123456", "primary_light": "#ffffff"},
+            "wordmark": {"text": "LiveClass", "case": "title"},
+            "signature": {"type": "none"},
+        }
+
+        variants = [
+            generate.resolve_layout_variant(generate.apply_style_pack(brand, style_id))
+            for style_id in generate.STYLE_PACKS
+        ]
+
+        self.assertIn("name_hero", variants)
+        self.assertIn("intro_hero", variants)
+        self.assertIn("badge_first", variants)
+        self.assertIn("diagonal", variants)
+        self.assertGreater(len(set(variants)), 1)
 
     def test_illustration_style_uses_print_safe_sticker_scene(self):
         brand = {
@@ -174,8 +199,10 @@ class StylePackTests(unittest.TestCase):
             )
 
             self.assertEqual(result.returncode, 0, result.stderr)
-            match = re.search(r"출력 HTML 생성: (.+\.html)", result.stderr)
+            match = re.search(r"HTML-only 출력 파일: (.+\.html)", result.stderr)
             self.assertIsNotNone(match, result.stderr)
+            self.assertNotIn("quick-preview", result.stderr)
+            self.assertNotIn("시안 preview 생성", result.stderr)
             output_html = Path(match.group(1)).read_text(encoding="utf-8")
         self.assertIn("ACMEBRAND", output_html)
         self.assertNotIn("Minimal Mono", output_html)
@@ -206,8 +233,38 @@ class StylePackTests(unittest.TestCase):
         self.assertIn("QR·LinkedIn 연결형", html)
         self.assertIn("강조 정보", html)
         self.assertIn("인쇄 리스크", html)
-        self.assertIn("고급 고광택 라벨지 추천", html)
-        self.assertIn("기본 탐사 A4 8칸 라벨지 추천", html)
+        self.assertIn("기본 탐사 A4 8칸 라벨지 기준", html)
+        self.assertNotIn("고급 고광택", html)
+        self.assertIn("variant-name_hero", html)
+        self.assertIn("variant-intro_hero", html)
+        self.assertIn("variant-badge_first", html)
+        self.assertIn("variant-diagonal", html)
+
+    def test_label_order_uses_standard_paper_only_and_opens_chrome(self):
+        product_name, product_url = generate.choose_label_paper_url()
+
+        self.assertEqual(product_name, "기본 탐사 A4 8칸 라벨지")
+        self.assertEqual(product_url, "https://link.coupang.com/a/eGNFOI")
+
+        with mock.patch.object(generate.subprocess, "run") as run:
+            generate.open_url_in_chrome(product_url)
+
+        run.assert_called_once_with(
+            ["open", "-a", "Google Chrome", "https://link.coupang.com/a/eGNFOI"],
+            check=True,
+            capture_output=True,
+        )
+
+    def test_label_paper_guidance_includes_printer_feed_direction_tip(self):
+        stderr = io.StringIO()
+
+        with contextlib.redirect_stderr(stderr):
+            generate.print_label_paper_guidance()
+
+        guidance = stderr.getvalue()
+        self.assertIn("프린터마다 라벨지 급지 방향이 다를 수 있습니다", guidance)
+        self.assertIn("일반 A4 용지에 펜으로 앞/위 방향을 표시", guidance)
+        self.assertIn("라벨지의 상하·앞뒤 출력 방향", guidance)
 
 
 if __name__ == "__main__":
