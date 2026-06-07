@@ -2,7 +2,7 @@
 
 기본 경로는 **Preview로 자동 오픈되는 300dpi PNG → Cmd+P**입니다. 자동 맞춤이 켜지면 라벨 칸이 1–3mm씩 밀릴 수 있으니, 아래 설정을 그대로 확인하세요.
 
-![macOS Preview 인쇄 설정 예시](docs/print/preview-print-settings.svg)
+![macOS Preview 인쇄 설정 예시](print/preview-print-settings.svg)
 
 ### macOS Preview / 미리보기 설정
 

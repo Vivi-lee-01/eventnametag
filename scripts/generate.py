@@ -2428,7 +2428,7 @@ def run_showcase(args) -> None:
     attendees, _dropped = parse_attendees(text) if text else ([], {})
     if not attendees:
         attendees = [
-            {"name": "김지원", "company": "LiveClass", "role": "HR Lead", "intro": "채용과 조직문화를 만듭니다"},
+            {"name": "김지원", "company": "DemoOrg", "role": "HR Lead", "intro": "채용과 조직문화를 만듭니다"},
             {"name": "박서연", "company": "Acme Lab", "role": "Product Manager", "intro": "AI 제품을 기획합니다"},
         ]
     ts = datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -2448,7 +2448,7 @@ def run_demo(html_only: bool = True) -> None:
     brand = load_brand(brand_slug)
     event = "AI Meetup Demo"
     attendees = [
-        {"name": "김지원", "company": "LiveClass", "role": "HR Lead", "intro": "채용과 조직문화를 만듭니다"},
+        {"name": "김지원", "company": "DemoOrg", "role": "HR Lead", "intro": "채용과 조직문화를 만듭니다"},
         {"name": "박서연", "company": "Acme Lab", "role": "Product Manager", "intro": "AI 제품을 기획합니다"},
         {"name": "이도윤", "company": "Delta Society", "role": "Engineer", "intro": "자동화를 좋아합니다"},
     ]
@@ -2496,7 +2496,7 @@ def run_quick(args) -> None:
         text = read_input(args)
     else:
         print("\n참석자 명단을 붙여넣으세요. Ctrl+D로 종료합니다.", file=sys.stderr)
-        print("예: 김지원<Tab>LiveClass<Tab>HR Lead<Tab>채용과 조직문화를 만듭니다", file=sys.stderr)
+        print("예: 김지원<Tab>DemoOrg<Tab>HR Lead<Tab>채용과 조직문화를 만듭니다", file=sys.stderr)
         text = sys.stdin.read()
 
     attendees, dropped = parse_attendees(text)

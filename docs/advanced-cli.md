@@ -58,10 +58,10 @@ $ bin/eventnametag quick
 행사명을 입력하세요:
 > AI Meetup Seoul #3
 브랜드/단체 이름이나 URL이 있나요? (없으면 Enter):
-> LiveClass
+> DemoOrg
 참석자 명단을 붙여넣으세요. Ctrl+D로 종료합니다.
-예: 김지원<Tab>LiveClass<Tab>HR Lead<Tab>채용과 조직문화를 만듭니다
-> 김지원	LiveClass	HR Lead	채용과 조직문화를 만듭니다
+예: 김지원<Tab>DemoOrg<Tab>HR Lead<Tab>채용과 조직문화를 만듭니다
+> 김지원	DemoOrg	HR Lead	채용과 조직문화를 만듭니다
 > 박서연	Acme Lab	PM	AI 제품을 기획합니다
 > [Ctrl+D]
 
@@ -167,7 +167,7 @@ python3 scripts/generate.py [COMMAND] [OPTIONS]
 
 예:
   bin/eventnametag quick --event "AI Meetup" --names "김지원,박서연,이도윤"
-  bin/eventnametag showcase --event "AI Meetup" --brand-hint "LiveClass"  # 선택: 샘플/디버그
+  bin/eventnametag showcase --event "AI Meetup" --brand-hint "DemoOrg"  # 선택: 샘플/디버그
 
 짧은 명령:
   demo                   샘플 브랜드+명단으로 즉시 preview 생성

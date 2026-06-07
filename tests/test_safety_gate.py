@@ -691,7 +691,7 @@ class RealRenderSafetyLoopTests(unittest.TestCase):
     def test_default_diagonal_passes_first_try(self):
         """기본 diagonal(저잉크)은 실렌더에서 1차 통과 — 회귀 0."""
         brand = generate.load_brand(generate._default_demo_brand_slug())
-        attendees = [{"name": "김지원", "company": "LiveClass", "role": "HR Lead"}]
+        attendees = [{"name": "김지원", "company": "DemoOrg", "role": "HR Lead"}]
         png, report = generate.render_with_safety_loop(attendees, brand, "Demo", self.tmp)
         self.assertTrue(png.exists())
         self.assertEqual(report["retried"], 0)

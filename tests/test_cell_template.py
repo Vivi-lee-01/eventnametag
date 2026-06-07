@@ -178,10 +178,10 @@ class FillTemplateTests(unittest.TestCase):
 
     def test_name_substituted_as_real_text(self):
         out = generate.fill_template(GOOD_TEMPLATE,
-                                     {"name": "김지원", "company": "라이브클래스"},
+                                     {"name": "김지원", "company": "데모오그"},
                                      self._brand(), "AI Meetup")
         self.assertIn("김지원", out)
-        self.assertIn("라이브클래스", out)
+        self.assertIn("데모오그", out)
         self.assertIn("TESTBRAND", out)
         self.assertNotIn("{{name}}", out)
         self.assertNotIn("{{company}}", out)

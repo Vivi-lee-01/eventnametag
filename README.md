@@ -7,12 +7,27 @@
 >
 > 이 링크는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.
 
+## 인쇄 가이드
+
+기본 경로는 **Preview로 자동 오픈되는 300dpi PNG → Cmd+P**입니다. 자동 맞춤이 켜지면 라벨 칸이 1–3mm씩 밀릴 수 있으니, 아래 설정을 그대로 확인하세요.
+
+![macOS Preview 인쇄 설정 예시](docs/print/preview-print-settings.svg)
+
+1. 최종 파일은 Preview에 열린 **300dpi PNG**를 사용합니다.
+2. 인쇄 용지는 **A4**로 설정합니다.
+3. 배율은 **크기 조절 100%**로 둡니다.
+4. `용지에 맞게 크기 조절 / Scale to Fit / 자동 맞춤`은 끕니다.
+5. 자동 회전은 끕니다.
+6. 첫 장은 일반 A4에 테스트 인쇄한 뒤, 실제 라벨지와 겹쳐 8칸 정렬과 급지 방향을 확인합니다.
+
+상세 설정과 정렬 보정은 [docs/print-guide.md](docs/print-guide.md)를 보세요.
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Skill: AI Agent](https://img.shields.io/badge/AI%20Agent-skill-7c3aed.svg)](https://github.com/)
 
 ---
 
-## 30초 요약
+## 무엇을 할 수 있나요
 
 - 행사명, 브랜드 단서, 참고 이미지/URL/md 같은 레퍼런스를 주면 행사 무드에 맞는 네임택을 만듭니다.
 - 명단이 있으면 참가자별 네임택을 자동 배치하고, 명단이 없어도 현장 수기용 빈 네임택을 만들 수 있습니다.
@@ -25,7 +40,7 @@
 Hermes, Codex, Claude Code 같은 AI 에이전트에게 이렇게 말하면 됩니다.
 
 ```text
-우리 행사 네임택 만들어줘. 행사명은 AI Meetup Seoul이고, 브랜드는 LiveClass 느낌으로. 현장 수기용으로 8칸 뽑고 싶어.
+우리 행사 네임택 만들어줘. 행사명은 AI Meetup Seoul이고, 브랜드는 DemoOrg 느낌으로. 현장 수기용으로 8칸 뽑고 싶어.
 ```
 
 ```text
@@ -37,18 +52,6 @@ Hermes, Codex, Claude Code 같은 AI 에이전트에게 이렇게 말하면 됩�
 ```
 
 에이전트는 행사명, 브랜드 단서, 명단/파일 여부만 확인한 뒤 필요한 명령을 대신 실행하는 흐름이 기본입니다. 사용자가 “샘플 먼저”라고 하지 않는 한, 별도 쇼케이스 화면을 먼저 띄우지 않습니다.
-
-## 바로 인쇄 체크
-
-1. 최종 파일은 Preview에 열린 **300dpi PNG**를 사용합니다.
-2. 인쇄 용지는 **A4**로 설정합니다.
-3. 배율은 **크기 조절 100%**로 둡니다.
-4. `용지에 맞게 크기 조절 / Scale to Fit / 자동 맞춤`은 끕니다.
-5. 자동 회전은 끕니다.
-6. 첫 장은 일반 A4에 테스트 인쇄한 뒤, 실제 라벨지와 겹쳐 8칸 정렬과 급지 방향을 확인합니다.
-7. 정렬이 일정하게 밀리면 `bin/eventnametag calibrate`로 보정합니다.
-
-상세 인쇄 설정은 [docs/print-guide.md](docs/print-guide.md)를 보세요.
 
 ## 터미널 Quick Start
 
@@ -66,7 +69,7 @@ bin/eventnametag quick --event "AI Meetup" --names "김지원,박서연,이도�
 
 ```bash
 bin/eventnametag demo --html-only
-bin/eventnametag showcase --event "AI Meetup" --brand-hint "LiveClass"
+bin/eventnametag showcase --event "AI Meetup" --brand-hint "DemoOrg"
 ```
 
 ## 입력 방식

@@ -78,10 +78,10 @@ class StylePackTests(unittest.TestCase):
 
     def test_style_pack_sets_layout_variant_so_showcase_cards_are_not_all_diagonal(self):
         brand = {
-            "name": "LiveClass",
-            "slug": "liveclass",
+            "name": "DemoOrg",
+            "slug": "demo-org",
             "colors": {"primary_dark": "#123456", "primary_light": "#ffffff"},
-            "wordmark": {"text": "LiveClass", "case": "title"},
+            "wordmark": {"text": "DemoOrg", "case": "title"},
             "signature": {"type": "none"},
         }
 
@@ -114,13 +114,13 @@ class StylePackTests(unittest.TestCase):
 
     def test_single_preview_fits_iframe_without_internal_scroll(self):
         brand = {
-            "name": "LiveClass",
-            "slug": "liveclass",
+            "name": "DemoOrg",
+            "slug": "demo-org",
             "colors": {"primary_dark": "#123456", "primary_light": "#ffffff"},
-            "wordmark": {"text": "LiveClass", "case": "title"},
+            "wordmark": {"text": "DemoOrg", "case": "title"},
             "signature": {"type": "none"},
         }
-        attendee = {"name": "김지원", "company": "LiveClass", "role": "HR Lead", "intro": "채용과 조직문화를 만듭니다"}
+        attendee = {"name": "김지원", "company": "DemoOrg", "role": "HR Lead", "intro": "채용과 조직문화를 만듭니다"}
 
         html = generate._render_single_preview(brand, "AI Meetup", "r1", attendee)
         preview_page = generate.build_preview_html(brand, "AI Meetup", ["r1"], [attendee])
@@ -158,10 +158,10 @@ class StylePackTests(unittest.TestCase):
             "signature": {"type": "none"},
         }
 
-        themed = generate._apply_quick_brand_hint(brand, "LiveClass")
+        themed = generate._apply_quick_brand_hint(brand, "DemoOrg")
 
-        self.assertEqual(themed["name"], "LiveClass")
-        self.assertEqual(themed["wordmark"]["text"], "LiveClass")
+        self.assertEqual(themed["name"], "DemoOrg")
+        self.assertEqual(themed["wordmark"]["text"], "DemoOrg")
 
     def test_quick_brand_hint_url_uses_hostname_instead_of_ignoring_url(self):
         brand = {
@@ -210,14 +210,14 @@ class StylePackTests(unittest.TestCase):
 
     def test_build_showcase_html_contains_mood_labels_and_paper_recommendations(self):
         brand = {
-            "name": "LiveClass",
-            "slug": "liveclass",
+            "name": "DemoOrg",
+            "slug": "demo-org",
             "colors": {"primary_dark": "#123456", "primary_light": "#ffffff"},
-            "wordmark": {"text": "LiveClass", "case": "title"},
+            "wordmark": {"text": "DemoOrg", "case": "title"},
             "signature": {"type": "none"},
         }
         attendees = [
-            {"name": "김지원", "company": "LiveClass", "role": "HR Lead", "intro": "채용과 조직문화를 만듭니다"}
+            {"name": "김지원", "company": "DemoOrg", "role": "HR Lead", "intro": "채용과 조직문화를 만듭니다"}
         ]
 
         html = generate.build_showcase_html(brand, "AI Meetup", attendees)

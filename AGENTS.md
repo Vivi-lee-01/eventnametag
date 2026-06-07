@@ -27,7 +27,7 @@ eventnametag를 Claude와 동일하게 실행하기 위한 진입점이다. 전�
 | print | "이 파일로 인쇄해줘" | `python3 scripts/generate.py --brand <slug> --event "..." --file guests.csv` |
 | fix | "정렬이 밀렸어" | `~/.config/eventnametag/calibration.yaml`에 `x`/`y`(mm) 저장 → 재실행 |
 
-`showcase`(행사 목적별 8개 제품 카드)도 있다: `bin/eventnametag showcase --event "..." --brand-hint "LiveClass"`.
+`showcase`(행사 목적별 8개 제품 카드)도 있다: `bin/eventnametag showcase --event "..." --brand-hint "DemoOrg"`.
 
 ## 3. 실행 명령
 
@@ -35,7 +35,7 @@ eventnametag를 Claude와 동일하게 실행하기 위한 진입점이다. 전�
 # 짧은 입구
 bin/eventnametag demo --html-only          # 즉시 샘플 preview
 bin/eventnametag doctor                     # Chrome/sips/PyYAML/Preview 진단
-bin/eventnametag showcase --event "AI Meetup" --brand-hint "LiveClass"
+bin/eventnametag showcase --event "AI Meetup" --brand-hint "DemoOrg"
 bin/eventnametag quick --event "AI Meetup" --names "김지원,박서연,이도윤"
 bin/eventnametag calibrate                  # 정렬 테스트 시트 1회 출력
 

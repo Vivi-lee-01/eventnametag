@@ -224,7 +224,7 @@ preview/showcase는 사용자가 “샘플 먼저”, “분위기 먼저”, �
 현재 repo 기준 핵심 스크립트는 다음이다.
 
 ```bash
-bin/eventnametag showcase --event "AI Meetup" --brand-hint "LiveClass"
+bin/eventnametag showcase --event "AI Meetup" --brand-hint "DemoOrg"
 bin/eventnametag demo --html-only
 bin/eventnametag doctor
 bin/eventnametag quick
