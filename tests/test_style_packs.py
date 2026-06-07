@@ -140,7 +140,8 @@ class StylePackTests(unittest.TestCase):
         self.assertIn("내부 구현/인쇄 안전 레이아웃", skill_text)
         self.assertIn("기본 UX가 아니다", skill_text)
         self.assertIn("직접 고를 필요가 없습니다", readme_text)
-        self.assertIn("에이전트가 내부 레이아웃을 선택", readme_text)
+        self.assertIn("실패 방지용 내부 구현", readme_text)
+        self.assertNotIn("시안 2개 생성", readme_text)
 
     def test_cli_fallback_style_choices_hide_raw_skeleton_ids_by_default(self):
         self.assertEqual(generate.skeleton_choice_label("r1"), "안정적인 기본형")

@@ -8,31 +8,6 @@
 
 ---
 
-## 먼저 결과물 보기
-
-처음부터 YAML이나 내부 템플릿을 고르지 않습니다. 먼저 행사 목적별 제품 카드 8개를 보여주고, 마음에 드는 방향을 고른 뒤 로고·컬러·명단만 보정합니다. 사용자는 내부 레이아웃 ID가 아니라 “이 행사는 이름이 잘 보여야 하는지, 대화가 열려야 하는지, 온라인 연결 문구가 필요한지”로 선택합니다. 단, QR 이미지 생성은 아직 비범위입니다.
-
-```bash
-bin/eventnametag showcase --event "AI Meetup Seoul" --brand-hint "LiveClass"
-```
-
-![eventnametag showcase 8개](docs/showcase/mood-showcase.png)
-
-정적 샘플 HTML: `docs/showcase/mood-showcase.html`
-
-쇼케이스 8개:
-
-| 제품 카드 | 적합한 행사 | 강조 정보 | 필요한 필드 | 추천 라벨지 | 인쇄 리스크 |
-|---|---|---|---|---|---|
-| 이름 가독성 최우선형 | 세미나, 일반 네트워킹, 사내 행사, 등록대에서 빠르게 이름 확인이 필요한 행사 | 이름을 가장 크게, 소속/역할은 보조 정보로 정리 | name, company, role | 기본 탐사 A4 8칸 라벨지 | 낮음 — 흰 여백이 많고 기본 라벨지에서 안정적 |
-| 네트워킹·한줄소개형 | 커뮤니티 밋업, 네트워킹 파티, 멤버 교류 행사, 소규모 컨퍼런스 | 한줄소개, 관심사, 대화 시작 단서 | name, company, role, intro, interests | 기본 탐사 A4 8칸 라벨지 | 보통 — 소개가 길면 글자가 작아지므로 35자 안팎 권장 |
-| 채용행사·직무 강조형 | 채용박람회, 캠퍼스 리크루팅, 후보자 밋업, 인터뷰 데이 | 직무, 관심 포지션, 후보자/리크루터 구분 | name, company, role, group, intro | 기본 탐사 A4 8칸 라벨지 | 낮음 — 컬러 면적이 작아 대량 출력에 유리 |
-| 스피커·스태프·VIP 구분형 | 컨퍼런스 운영, 초청행사, 스피커/VIP 동선 구분, 스태프 체크인 | Staff/Speaker/VIP 역할, 그룹, 트랙, 동선 구분 | name, company, role, group, track | 기본 탐사 A4 8칸 라벨지 | 낮음 — 운영 배지는 선명하지만 배경 잉크 사용량은 제한 |
-| AI·해커톤 에너지형 | AI 밋업, 데모데이, 해커톤, 개발자 컨퍼런스, 팀 빌딩 행사 | 팀, 트랙, 프로젝트/데모 키워드, 기술 관심사 | name, company, role, track, interests | 기본 탐사 A4 8칸 라벨지 | 보통 — 강한 무드는 저잉크 벡터로 번역하고 대량 인쇄 전 색감 테스트 권장 |
-| 프리미엄 살롱형 | 프리미엄 살롱, 리더십 모임, VIP 초청, 투자자/파트너 라운드테이블 | 이름, 소속, 초청 행사명, 과하지 않은 브랜드 무드 | name, company, role | 기본 탐사 A4 8칸 라벨지 | 낮음 — 잉크 사용량이 적고 기본 라벨지에서도 무난 |
-| 교육·워크숍 캐주얼형 | 교육, 워크숍, 커뮤니티 온보딩, 사내 러닝데이, 청소년/대학생 프로그램 | 이름, 소속/학교, 참여 그룹, 한줄소개 | name, company, group, intro | 기본 탐사 A4 8칸 라벨지 | 보통 — 밝은 장식은 안전하지만 색감 확인용 테스트 권장 |
-| QR·LinkedIn 연결형 | 네트워킹 행사, 채용 행사, 글로벌 컨퍼런스, 크리에이터/창업자 밋업 | 이름, 소속, LinkedIn/개인 페이지 안내 문구 | name, company, role, intro | 기본 탐사 A4 8칸 라벨지 | 보통 — 제품 카드 이름은 QR형이지만 QR 이미지 렌더링은 아직 비범위, 연결 문구 중심 |
-
 ## 무엇
 행사 전날, 명단만 넣으면 주최측 BI와 행사 무드가 반영된 네임택을 A4 8칸 라벨지에 바로 인쇄할 수 있게 만드는 도구입니다.
 
@@ -80,232 +55,6 @@ Hermes CLI의 긴 한글 선택 질문 박스가 깨질 수 있어, 실제 Agent
 - **기본 탐사 A4 8칸 라벨지**: https://link.coupang.com/a/eGNFOI
 
 > 이 링크는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.
-
-## Quick Start
-
-AI 에이전트 안에서 사용할 때는 아래 명령을 사용자가 직접 칠 필요가 없습니다. Agent가 라벨지 준비, 행사 정보, 브랜드 방식, 명단 입력 방식을 `askuser`/선택형 질문으로 확인한 뒤 대신 실행하는 것이 기본 UX입니다.
-
-터미널에서 직접 사용할 때만 아래 CLI 흐름을 따르면 됩니다.
-
-### 1. 의존성 설치
-
-```bash
-# 시스템 의존성
-#   - macOS Preview (기본 제공)
-#   - Google Chrome (https://google.com/chrome)
-#   - sips (macOS 기본 제공)
-
-# Python 의존성
-cd ~/projects/eventnametag
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
-
-### 2. 첫 확인 — doctor
-
-```bash
-$ bin/eventnametag doctor
-✓ PyYAML
-✓ jsonschema
-✓ Pillow(PIL)
-✓ Google Chrome
-✓ sips
-✓ Preview open
-상태: 바로 demo/quick 실행 가능
-```
-
-### 3. 1분 안에 쇼케이스 보기 — showcase
-
-```bash
-$ bin/eventnametag showcase --event "AI Meetup Seoul" --brand-hint "LiveClass"
-✓ 행사 무드별 네임택 쇼케이스 생성
-  포함: 깔끔한 기본형 / 프리미엄 / AI·해커톤 / 일러스트 / 채용·리크루팅 / 운영형
-  미리보기: ~/.claude/tmp/eventnametag/mood-showcase-....html
-```
-
-Agent 안에서는 쇼케이스를 기본 첫 화면으로 강제하지 않습니다. 사용자가 “샘플 먼저”, “분위기 먼저”를 원할 때만 이 화면을 보여주고, 일반 요청은 행사 정보/BI/명단을 먼저 받아 바로 생성합니다.
-
-### 4. 샘플 preview — demo
-
-```bash
-$ bin/eventnametag demo --html-only
-탐사 A4 8칸 라벨지 준비 상태를 확인할게요.
-
-  1. 쿠팡에서 주문할게요
-  2. 이미 가지고 있어요
-  3. 라벨지는 나중에 준비하고, 행사 정보부터 입력할게요
-> 3
-✓ 샘플 네임택 preview 생성
-  미리보기: ~/.claude/tmp/eventnametag/demo-preview-....html
-```
-
-핵심은 구매를 강요하는 것이 아니라, 물리 라벨지가 없으면 내일 인쇄 일정이 막히므로 첫 실행에서 준비 여부를 먼저 확인하는 것입니다.
-1번을 선택하면 Chrome에서 기본 탐사 A4 8칸 라벨지 구매 링크가 바로 열립니다.
-
-### 5. 5분 안에 내 행사 네임택 만들기 — quick
-
-```bash
-$ bin/eventnametag quick
-행사명을 입력하세요:
-> AI Meetup Seoul #3
-브랜드/단체 이름이나 URL이 있나요? (없으면 Enter):
-> LiveClass
-참석자 명단을 붙여넣으세요. Ctrl+D로 종료합니다.
-예: 김지원<Tab>LiveClass<Tab>HR Lead<Tab>채용과 조직문화를 만듭니다
-> 김지원	LiveClass	HR Lead	채용과 조직문화를 만듭니다
-> 박서연	Acme Lab	PM	AI 제품을 기획합니다
-> [Ctrl+D]
-
-✓ 명단 2명 파싱
-✓ 스타일 자동 선택: 안정적인 기본형
-✓ 인쇄용 네임택 생성
-📄 PDF → 300dpi PNG → Preview 자동 오픈
-```
-
-`quick`은 “바로 만들어줘” 경로이므로 별도 preview 탭을 열지 않습니다. 디자인 비교가 필요할 때만 `showcase`/`demo`를 명시적으로 사용합니다.
-
-파이프/자동화 입력도 가능합니다.
-
-```bash
-bin/eventnametag quick --event "AI Meetup" --names "김지원,박서연,이도윤"
-```
-
-### 6. BI 등록 (인터뷰 모드)
-
-```bash
-$ python3 scripts/generate.py --register-brand
-어떻게 BI를 등록하시겠어요?
-  1. 직접 yaml 편집  /  2. AI 에이전트 인터뷰  /  3. URL 자동 추출
-> 2
-
-🎙️ BI 인터뷰
-  회사명? > Acme Lab
-  slug? > acme-lab
-  주요 색 1 (다크/강조)? > #1a1a2e
-  주요 색 2 (배경/라이트)? > #ffffff
-  액센트? > #ff6b35
-  워드마크? > Acme Lab
-  시그니처? (gradient_orb / icon_url / none) > none
-  선호 skeleton? > r1, r4
-
-✅ 저장: ~/.config/eventnametag/brands/acme-lab.yaml
-```
-
-또는 동봉된 examples 따라쓰기:
-
-```bash
-cp brands/examples/minimal-mono.yaml ~/.config/eventnametag/brands/my-brand.yaml
-$EDITOR ~/.config/eventnametag/brands/my-brand.yaml
-```
-
-### 7. 고급: 등록한 BI로 행사 네임택 만들기
-
-```bash
-$ python3 scripts/generate.py --brand acme-lab --event "올핸즈 2026 Q2"
-명단 붙여넣기 (Ctrl+D 종료):
-> 김지원	Acme Lab	HR Lead	채용 담당
-> 박서연	Acme Lab	PM	제품 기획
-> [Ctrl+D]
-
-✓ 명단 2명 파싱
-🎨 시안 2개 생성 (R1·R4) → 미리보기 자동 오픈
-어떤 시안으로 인쇄? [1/2] > 2
-📄 PDF → 300dpi PNG → Preview 자동 오픈
-   Cmd+P → 크기 조절 100% → 탐사 A4 8칸 라벨지 인쇄
-```
-
-### 8. 첫 인쇄 전 정렬 테스트
-
-```bash
-$ bin/eventnametag calibrate
-```
-
-격자가 그려진 시트가 나오는데, 일반 A4 종이로 먼저 인쇄해서 라벨지에 겹쳐보고 정렬 확인.
-
-### 9. 라벨지 떨어졌을 때
-
-```bash
-$ bin/eventnametag order-paper
-🛒 쿠팡 라벨지 페이지 자동 오픈
-```
-
-## BI 등록 3가지 입구
-
-| 모드 | 적합 사용자 | 진입 |
-|---|---|---|
-| **(1) yaml 직접 편집** | 개발자·디자인 안목 있는 사용자 | `brands/examples/`를 `~/.config/eventnametag/brands/`로 복사 후 $EDITOR |
-| **(2) AI 에이전트 인터뷰** *(default)* | 색·폰트 정도만 알고 있는 사용자 | `--register-brand` → 2번 |
-| **(3) URL 자동 추출** | "회사 사이트 주면 알아서" 사용자 | `--register-brand` → 3번 |
-
-## 내부 레이아웃 풀
-
-현재 구조는 **검증된 4개 내부 레이아웃 + AI 셀 템플릿 + 사용자 정의**의 3-layer입니다. 일반 사용자는 이 레이아웃 ID를 직접 고를 필요가 없습니다. AI 에이전트가 행사 무드, 명단 필드 길이, 잉크 사용량, 라벨지 조건을 보고 자동 선택하는 것이 기본 UX입니다.
-
-AI 셀 템플릿은 자유도가 높지만 아래 조건을 통과해야만 렌더됩니다. 실패하면 검증된 내부 레이아웃으로 자동 fallback합니다.
-
-- `{{name}}` 필수
-- `{{organizer}}` 또는 `{{host}}` 필수 — 주최사/호스트명
-- 작성 공백은 전체 셀의 최소 2/3에 가까운 넓은 영역
-- 공백 작성란에 점선/밑줄/칸 구분선 금지
-- 장소명·주소·층수·상세 일시 같은 포스터성 정보 금지
-- 그라데이션·사진·풀블리드·대면적 진한 배경 금지
-- 색/폰트는 브랜드 토큰만 사용
-
-고급 사용자나 디버깅 상황에서만 아래 ID를 확인합니다.
-
-| ID | 이름 | 특징 | 잉크 사용량 |
-|---|---|---|---|
-| **R1** | 상단 다크바 | 가장 안정·검증. 보편형. | 보통 |
-| **R2** | 좌측 세로 띠 | 컬러 면적 작음, 본문 공간 ↑. 긴 이름·소개에 유리 | 적음 |
-| **R3** | 강한 다크 무드 | 임팩트 ↑. 현재 기본 원칙상 그라데이션/사진 풀블리드는 금지하고 저잉크 벡터로 번역 | 많음 ⚠️ |
-| **R4** | 미니멀 | bar 없음, 코너 마이크로 브랜딩. 고급감 | 가장 적음 |
-
-자기 회사 시그니처가 위 4개로 표현 안 되면 사용자 정의 레이아웃 추가가 가능합니다. `docs/skeleton-guide.md` 참조.
-
-각 BI yaml에서 `preferred_skeletons`로 내부 후보를 제한할 수 있지만, 기본 제품 UX는 사용자가 ID를 고르는 방식이 아니라 행사 무드/목적을 고르면 에이전트가 내부 레이아웃을 선택하는 방식입니다.
-
-## CLI 옵션
-
-```
-bin/eventnametag [COMMAND] [OPTIONS]
-python3 scripts/generate.py [COMMAND] [OPTIONS]
-
-예:
-  bin/eventnametag showcase --event "AI Meetup" --brand-hint "LiveClass"
-  bin/eventnametag quick --event "AI Meetup" --names "김지원,박서연,이도윤"
-
-짧은 명령:
-  demo                   샘플 브랜드+명단으로 즉시 preview 생성
-  doctor                 의존성/브랜드/인쇄 환경 점검
-  quick                  행사명/브랜드/명단을 묻는 빠른 생성 wizard
-  showcase              행사 목적별 8개 제품 카드 쇼케이스 생성
-  order-paper            쿠팡 라벨지 재구매 페이지 자동 오픈
-  calibrate              탐사 A4 8칸 라벨지 정렬 테스트 시트
-  register-brand         새 BI 등록
-
-옵션:
-  --brand <slug>          사용할 BI yaml 지정. 없으면 quick/showcase/demo에서는 예시/brand-hint로 진행
-  --event <name>          행사명 (예: "AI Meetup #3"). 장소/층수보다 무드 식별용으로만 최소 사용
-  --file <csv>            CSV 파일 경로
-  --names <a,b,c>         이름만 쉼표로 (빠른 모드)
-
-  --demo                  샘플 브랜드+명단으로 즉시 preview 생성
-  --doctor                의존성/브랜드/인쇄 환경 점검
-
-  --register-brand        새 BI 등록 (인터뷰 / yaml / URL 추출 분기)
-  --order-paper           쿠팡 라벨지 재구매 페이지 자동 오픈
-  --calibrate             탐사 A4 8칸 라벨지 정렬 테스트 시트 (skeleton 무관)
-
-  --blank                 백지 네임택 (현장 수기용) 8칸
-  --both --spares N       명단 + 예비지 N칸 같이
-  --fill-blanks           명단 페이지의 남는 칸을 워드마크만 있는 blank로
-
-  --html-only             HTML만 생성 (디버그·빠른 반복용). 기본은 PDF→300dpi PNG
-  --no-contrast-check     컬러 대비 가드(G2) 강행
-  --ignore-ink            잉크 커버리지 가드(G3) 강행
-  --validate <yaml>       BI yaml schema 검증만 수행 후 종료
-```
 
 ## 인쇄 가이드
 
@@ -355,6 +104,207 @@ python3 scripts/generate.py [COMMAND] [OPTIONS]
 
 `--html-only` 플래그를 쓰면 이 단계 없이 HTML만 브라우저에 띄우므로, 폰트 이슈가 없는 환경에서 빠른 반복 작업에 씁니다.
 
+## Quick Start
+
+AI 에이전트 안에서 사용할 때는 아래 명령을 사용자가 직접 칠 필요가 없습니다. Agent가 라벨지 준비, 행사 정보, 브랜드 방식, 명단 입력 방식을 `askuser`/선택형 질문으로 확인한 뒤 대신 실행하는 것이 기본 UX입니다.
+
+터미널에서 직접 사용할 때만 아래 CLI 흐름을 따르면 됩니다.
+
+### 1. 의존성 설치
+
+```bash
+# 시스템 의존성
+#   - macOS Preview (기본 제공)
+#   - Google Chrome (https://google.com/chrome)
+#   - sips (macOS 기본 제공)
+
+# Python 의존성
+cd ~/projects/eventnametag
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+### 2. 첫 확인 — doctor
+
+```bash
+$ bin/eventnametag doctor
+✓ PyYAML
+✓ jsonschema
+✓ Pillow(PIL)
+✓ Google Chrome
+✓ sips
+✓ Preview open
+상태: 바로 demo/quick 실행 가능
+```
+
+### 3. 샘플 preview — demo
+
+```bash
+$ bin/eventnametag demo --html-only
+탐사 A4 8칸 라벨지 준비 상태를 확인할게요.
+
+  1. 쿠팡에서 주문할게요
+  2. 이미 가지고 있어요
+  3. 라벨지는 나중에 준비하고, 행사 정보부터 입력할게요
+> 3
+✓ 샘플 네임택 preview 생성
+  미리보기: ~/.claude/tmp/eventnametag/demo-preview-....html
+```
+
+핵심은 구매를 강요하는 것이 아니라, 물리 라벨지가 없으면 내일 인쇄 일정이 막히므로 첫 실행에서 준비 여부를 먼저 확인하는 것입니다.
+1번을 선택하면 Chrome에서 기본 탐사 A4 8칸 라벨지 구매 링크가 바로 열립니다.
+
+### 4. 5분 안에 내 행사 네임택 만들기 — quick
+
+```bash
+$ bin/eventnametag quick
+행사명을 입력하세요:
+> AI Meetup Seoul #3
+브랜드/단체 이름이나 URL이 있나요? (없으면 Enter):
+> LiveClass
+참석자 명단을 붙여넣으세요. Ctrl+D로 종료합니다.
+예: 김지원<Tab>LiveClass<Tab>HR Lead<Tab>채용과 조직문화를 만듭니다
+> 김지원	LiveClass	HR Lead	채용과 조직문화를 만듭니다
+> 박서연	Acme Lab	PM	AI 제품을 기획합니다
+> [Ctrl+D]
+
+✓ 명단 2명 파싱
+✓ 인쇄용 네임택 생성
+📄 PDF → 300dpi PNG → Preview 자동 오픈
+```
+
+`quick`은 “바로 만들어줘” 경로이므로 별도 preview 탭을 열지 않습니다. 디자인 비교가 필요할 때만 `showcase`/`demo`를 명시적으로 사용합니다.
+
+파이프/자동화 입력도 가능합니다.
+
+```bash
+bin/eventnametag quick --event "AI Meetup" --names "김지원,박서연,이도윤"
+```
+
+### 5. BI 등록 (인터뷰 모드)
+
+```bash
+$ python3 scripts/generate.py --register-brand
+어떻게 BI를 등록하시겠어요?
+  1. 직접 yaml 편집  /  2. AI 에이전트 인터뷰  /  3. URL 자동 추출
+> 2
+
+🎙️ BI 인터뷰
+  회사명? > Acme Lab
+  slug? > acme-lab
+  주요 색 1 (다크/강조)? > #1a1a2e
+  주요 색 2 (배경/라이트)? > #ffffff
+  액센트? > #ff6b35
+  워드마크? > Acme Lab
+  시그니처? (gradient_orb / icon_url / none) > none
+
+✅ 저장: ~/.config/eventnametag/brands/acme-lab.yaml
+```
+
+또는 동봉된 examples 따라쓰기:
+
+```bash
+cp brands/examples/minimal-mono.yaml ~/.config/eventnametag/brands/my-brand.yaml
+$EDITOR ~/.config/eventnametag/brands/my-brand.yaml
+```
+
+### 6. 등록한 BI로 행사 네임택 만들기
+
+```bash
+$ python3 scripts/generate.py --brand acme-lab --event "올핸즈 2026 Q2"
+명단 붙여넣기 (Ctrl+D 종료):
+> 김지원	Acme Lab	HR Lead	채용 담당
+> 박서연	Acme Lab	PM	제품 기획
+> [Ctrl+D]
+
+✓ 명단 2명 파싱
+✓ 행사 무드와 BI 기반 네임택 생성
+📄 PDF → 300dpi PNG → Preview 자동 오픈
+   Cmd+P → 크기 조절 100% → 탐사 A4 8칸 라벨지 인쇄
+```
+
+### 7. 첫 인쇄 전 정렬 테스트
+
+```bash
+$ bin/eventnametag calibrate
+```
+
+격자가 그려진 시트가 나오는데, 일반 A4 종이로 먼저 인쇄해서 라벨지에 겹쳐보고 정렬 확인.
+
+### 8. 라벨지 떨어졌을 때
+
+```bash
+$ bin/eventnametag order-paper
+🛒 쿠팡 라벨지 페이지 자동 오픈
+```
+
+## BI 등록 3가지 입구
+
+| 모드 | 적합 사용자 | 진입 |
+|---|---|---|
+| **(1) yaml 직접 편집** | 개발자·디자인 안목 있는 사용자 | `brands/examples/`를 `~/.config/eventnametag/brands/`로 복사 후 $EDITOR |
+| **(2) AI 에이전트 인터뷰** *(default)* | 색·폰트 정도만 알고 있는 사용자 | `--register-brand` → 2번 |
+| **(3) URL 자동 추출** | "회사 사이트 주면 알아서" 사용자 | `--register-brand` → 3번 |
+
+## 내부 안전 fallback
+
+일반 사용자는 내부 레이아웃을 직접 고를 필요가 없습니다. 현재 핵심 기능은 **행사 무드와 BI를 반영한 AI 셀 템플릿 생성**이고, 내부 레이아웃은 AI 템플릿이 인쇄 안전 기준을 통과하지 못할 때만 쓰는 안전장치입니다.
+
+AI 셀 템플릿은 아래 조건을 통과해야 렌더됩니다. 실패하면 도구가 조용히 안전 fallback으로 바꿔 인쇄 실패를 막습니다.
+
+- `{{name}}` 필수
+- `{{organizer}}` 또는 `{{host}}` 필수 — 주최사/호스트명
+- 작성 공백은 전체 셀의 최소 2/3에 가까운 넓은 영역
+- 공백 작성란에 점선/밑줄/칸 구분선 금지
+- 장소명·주소·층수·상세 일시 같은 포스터성 정보 금지
+- 그라데이션·사진·풀블리드·대면적 진한 배경 금지
+- 색/폰트는 브랜드 토큰만 사용
+
+즉, README에서 내부 레이아웃을 사용자가 선택해야 하는 기능처럼 설명하지 않습니다. 그것들은 제품 기능이 아니라 실패 방지용 내부 구현입니다.
+
+## CLI 옵션
+
+```
+bin/eventnametag [COMMAND] [OPTIONS]
+python3 scripts/generate.py [COMMAND] [OPTIONS]
+
+예:
+  bin/eventnametag quick --event "AI Meetup" --names "김지원,박서연,이도윤"
+  bin/eventnametag showcase --event "AI Meetup" --brand-hint "LiveClass"  # 선택: 샘플/디버그
+
+짧은 명령:
+  demo                   샘플 브랜드+명단으로 즉시 preview 생성
+  doctor                 의존성/브랜드/인쇄 환경 점검
+  quick                  행사명/브랜드/명단을 묻는 빠른 생성 wizard
+  showcase              선택 기능: 행사 목적별 샘플/디버그 쇼케이스 생성
+  order-paper            쿠팡 라벨지 재구매 페이지 자동 오픈
+  calibrate              탐사 A4 8칸 라벨지 정렬 테스트 시트
+  register-brand         새 BI 등록
+
+옵션:
+  --brand <slug>          사용할 BI yaml 지정. 없으면 quick/showcase/demo에서는 예시/brand-hint로 진행
+  --event <name>          행사명 (예: "AI Meetup #3"). 장소/층수보다 무드 식별용으로만 최소 사용
+  --file <csv>            CSV 파일 경로
+  --names <a,b,c>         이름만 쉼표로 (빠른 모드)
+
+  --demo                  샘플 브랜드+명단으로 즉시 preview 생성
+  --doctor                의존성/브랜드/인쇄 환경 점검
+
+  --register-brand        새 BI 등록 (인터뷰 / yaml / URL 추출 분기)
+  --order-paper           쿠팡 라벨지 재구매 페이지 자동 오픈
+  --calibrate             탐사 A4 8칸 라벨지 정렬 테스트 시트 (skeleton 무관)
+
+  --blank                 백지 네임택 (현장 수기용) 8칸
+  --both --spares N       명단 + 예비지 N칸 같이
+  --fill-blanks           명단 페이지의 남는 칸을 워드마크만 있는 blank로
+
+  --html-only             HTML만 생성 (디버그·빠른 반복용). 기본은 PDF→300dpi PNG
+  --no-contrast-check     컬러 대비 가드(G2) 강행
+  --ignore-ink            잉크 커버리지 가드(G3) 강행
+  --validate <yaml>       BI yaml schema 검증만 수행 후 종료
+```
+
 ## 가드레일
 
 현재 차단하는 silent failure:
@@ -383,7 +333,7 @@ python3 scripts/generate.py [COMMAND] [OPTIONS]
 설치 후 재시도 (https://google.com/chrome). 또는 `--html-only`로 우회 (이 경우 사용자가 직접 브라우저에서 Cmd+P).
 
 ### 잉크 커버리지 경고가 떠요
-강한 다크 무드나 장식이 많은 템플릿에서 자주 나옵니다. R1/R4처럼 여백이 많은 레이아웃으로 변경하거나, 장식을 줄이는 것이 기본 대응입니다. `--ignore-ink` 강행은 테스트 인쇄를 감수할 때만 씁니다.
+강한 다크 무드나 장식이 많은 템플릿에서 자주 나옵니다. 여백이 많은 안전 레이아웃으로 fallback시키거나, 장식을 줄이는 것이 기본 대응입니다. `--ignore-ink` 강행은 테스트 인쇄를 감수할 때만 씁니다.
 
 ### `rangecheck` 에러
 이 스킬은 raster PNG 경로로 자동 회피. 그래도 발생하면 프린터 PostScript 인터프리터가 PDF를 거부한 케이스이므로 다른 프린터로 시도.
