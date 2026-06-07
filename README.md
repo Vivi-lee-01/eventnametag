@@ -1,7 +1,7 @@
 # eventnametag
 
-> **행사 전날, 명단만 넣으면 바로 인쇄 가능한 네임택을 만들어주는 무료 AI 에이전트 스킬.**
-> Hermes, Codex, Claude Code 같은 AI 에이전트와 일반 터미널에서 사용할 수 있습니다. 탐사 A4 8칸 라벨지(99×67.5mm) 전용.
+> **행사 전날 “명찰 어떡하지?”를 끝내는 무료 AI 네임택 제작 스킬.**
+> 행사명·브랜드 단서·레퍼런스만 있어도 현장 수기용 네임택을 만들고, 명단이 있으면 참가자별 네임택까지 탐사 A4 8칸 라벨지(99×67.5mm)에 맞춰 바로 인쇄할 수 있게 출력합니다. Hermes, Codex, Claude Code 같은 AI 에이전트와 일반 터미널에서 사용할 수 있습니다.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Skill: AI Agent](https://img.shields.io/badge/AI%20Agent-skill-7c3aed.svg)](https://github.com/)
