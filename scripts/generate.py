@@ -1742,7 +1742,28 @@ def render_pdf_and_png(html_path: Path, out_dir: Path) -> tuple[Path, Path]:
         check=True,
         capture_output=True,
     )
+
+    # 인쇄 정확도 불변식: 산출 PNG는 반드시 300dpi여야 한다.
+    # 미리보기 100% = 픽셀÷DPI 물리크기이므로, DPI가 72로 박히면 A4에 귀퉁이만 들어온다.
+    # set이 조용히 실패하는 회귀를 출고 전에 차단한다.
+    _assert_png_300dpi(png_out)
     return pdf_out, png_out
+
+
+def _assert_png_300dpi(png_out: Path) -> None:
+    """렌더된 PNG의 DPI 메타가 300인지 읽어서 검증. 아니면 RuntimeError."""
+    probe = subprocess.run(
+        ["sips", "-g", "dpiWidth", "-g", "dpiHeight", str(png_out)],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    dpis = [float(m) for m in re.findall(r"dpi(?:Width|Height):\s*([\d.]+)", probe.stdout)]
+    if not dpis or any(abs(d - 300.0) > 0.5 for d in dpis):
+        raise RuntimeError(
+            f"PNG DPI 검증 실패 (기대 300, 실측 {dpis or '없음'}): {png_out}\n"
+            "  → 미리보기 100% 인쇄 시 라벨이 잘린다. sips DPI 설정 단계를 확인하라."
+        )
 
 
 # ─────────────────────── 가드레일 G2 — 컬러 대비 (WCAG AA) ───────────────────────
