@@ -109,7 +109,7 @@
       "additionalProperties": false,
       "properties": {
         "type": {
-          "enum": ["gradient_orb", "icon_url", "none"]
+          "enum": ["gradient_orb", "icon_url", "svg_inline", "none"]
         },
         "gradient": {
           "description": "type=gradient_orb일 때 사용.",
@@ -125,6 +125,10 @@
           "description": "type=icon_url일 때 사용. SVG/PNG 권장.",
           "type": "string",
           "format": "uri"
+        },
+        "svg": {
+          "description": "type=svg_inline일 때 사용. 인라인 벡터 SVG(새니타이즈됨). fill=currentColor 권장 — topbar 텍스트색 상속.",
+          "type": "string"
         },
         "size_mm": {
           "description": "마크 크기 (mm). 네임택은 2-4mm 권장.",

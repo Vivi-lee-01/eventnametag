@@ -1111,6 +1111,17 @@ def build_signature_html(brand: dict) -> str:
         url = html_mod.escape(sig.get("icon_url", ""))
         size = sig.get("size_mm", 3.5)
         return f'<img class="signature-icon" src="{url}" alt="" style="width: {size}mm; height: {size}mm;">'
+    if sig_type == "svg_inline":
+        # 인라인 벡터 시그니처(예: 멘토 상징 지팡이). 벡터-only 불변식 보장을 위해
+        # 직접 삽입 전 sanitize_svg로 래스터/외부URL/script/이벤트핸들러를 제거한다.
+        import _svg_safe  # 지연 import
+        safe = _svg_safe.sanitize_svg(sig.get("svg", "") or "") or ""
+        if not safe:
+            return ""
+        size = sig.get("size_mm", 3.5)
+        # color는 topbar 텍스트색(var(--brand-light)) 상속 → svg는 fill="currentColor" 사용
+        return (f'<span class="signature-svg" style="display:inline-flex;flex-shrink:0;'
+                f'width:{size}mm;height:{size}mm;color:var(--brand-light)">{safe}</span>')
     return ""
 
 
@@ -1369,7 +1380,21 @@ def build_cell(att: dict | None, brand: dict, event: str, layout_variant: str = 
 
 
 def build_blank_cell(brand: dict, event: str) -> str:
-    """현장 수기용 빈 네임택 — 워드마크만 + 2/3 이상 백지 본문. 장소/행사 세부문구 금지."""
+    """현장 수기용 빈 네임택 — 워드마크만 + 2/3 이상 백지 본문. 장소/행사 세부문구 금지.
+
+    v0.6: brand에 유효한 design.cell_template이 있으면 빈 토큰(이름/회사 등 "")으로 채워
+    렌더한다. → 상단 밴드·로켓 같은 장식은 살리고, 이름 영역은 토큰이 빈 값이라 그대로
+    백지 수기 공간이 된다(불변식: 작성란은 진짜 공백). cell_template 없는 brand는 기존
+    스켈레톤 blank로 폴백."""
+    cell_template = (brand.get("design") or {}).get("cell_template")
+    if cell_template:
+        ok, _tz, _reason = validate_cell_template(cell_template, brand)
+        if ok:
+            blank_att = {"name": "", "company": "", "role": "",
+                         "intro": "", "track": "", "group": ""}
+            filled = fill_template(cell_template, blank_att, brand, event)
+            return f'<div class="cell variant-ai">\n{filled}\n</div>'
+
     wordmark = brand.get("wordmark", {})
     wm_text = html_mod.escape(apply_case(wordmark.get("text", ""), wordmark.get("case", "title")))
     sig_html = build_signature_html(brand)
