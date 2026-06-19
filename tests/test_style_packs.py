@@ -245,13 +245,13 @@ class StylePackTests(unittest.TestCase):
         product_name, product_url = generate.choose_label_paper_url()
 
         self.assertEqual(product_name, "기본 탐사 A4 8칸 라벨지")
-        self.assertEqual(product_url, "https://link.coupang.com/a/eGNFOI")
+        self.assertEqual(product_url, "https://link.coupang.com/a/eHTHl80SGq")
 
         with mock.patch.object(generate.subprocess, "run") as run:
             generate.open_url_in_chrome(product_url)
 
         run.assert_called_once_with(
-            ["open", "-a", "Google Chrome", "https://link.coupang.com/a/eGNFOI"],
+            ["open", "-a", "Google Chrome", "https://link.coupang.com/a/eHTHl80SGq"],
             check=True,
             capture_output=True,
         )

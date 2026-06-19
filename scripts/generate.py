@@ -59,7 +59,7 @@ CALIBRATION_FILE = USER_DIR / "calibration.yaml"  # v0.2: 사용자별 프린터
 OUTPUT_DIR = Path.home() / ".claude" / "tmp" / "eventnametag"
 
 CHROME_BIN = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-COUPANG_STANDARD_URL = "https://link.coupang.com/a/eGNFOI"
+COUPANG_STANDARD_URL = "https://link.coupang.com/a/eHTHl80SGq"
 COUPANG_URL = COUPANG_STANDARD_URL
 
 # 사용자는 skeleton ID보다 “행사 분위기”를 먼저 이해한다. Style pack은
